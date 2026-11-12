@@ -1,0 +1,324 @@
+---
+title: "Mulitple Endpoints"
+---
+
+The [FDA guidance on multiple endpoints in clinical trials](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/multiple-endpoints-clinical-trials)
+lists four types of multiple endpoints:
+
+- **Co-primary endpoints**: When demonstration of treatment effects on two or more distinct
+  endpoints is recommended to establish clinical benefit
+- **Several primary endpoints**: When demonstration of a treatment effect on at least one of several
+  primary endpoints is sufficient
+- Composite endpoints
+- Multi-component endpoints
+
+The former two have some consequences on overall family-wise type I and II error rates, we will discuss here.
+In both situations, the overall error rates can be calculated form the individual, marginal error rates using 
+  a multivariate normal distribution:
+  
+```{r}
+#| echo: true
+#| results: hide
+#| message: false
+#| warning: false
+
+
+library(mvtnorm)
+library(ggplot2)
+library(dplyr)
+
+overall_opchar<-function(marg_alpha = NULL, marg_power = NULL, r, co = TRUE) {
+  
+  if (is.null(marg_alpha) && is.null(marg_power)) {
+    stop("At least one of marg_alpha and marg_power must be given.")
+  }
+  
+  totalpha <- NULL
+  totpower <- NULL
+  
+  if (!is.null(marg_alpha)) {
+     
+    if (length(marg_alpha)<2) {
+      stop("marg_alpha has to be of length 2 or larger")
+    }
+    
+    z<-qnorm(1 - marg_alpha)
+    
+    totalpha <- unlist(lapply(r, function(x) {
+      sigma <- matrix(x, length(marg_alpha), length(marg_alpha))
+      diag(sigma) <- 1
+      
+      if (co) {
+         # All endpoints must be significant
+        return(pmvnorm(lower = z, corr = sigma))
+      } else {
+         # One endpoint must be significant
+        return(1 - pmvnorm(upper = z, corr = sigma))
+      }
+    })) 
+   }  
+  
+  if (!is.null(marg_power)) {
+    
+    if (length(marg_power)<2) {
+      stop("marg_power has to be of length 2 or larger")
+     }
+    
+    #use any alpha if not given, power does not depend on it.
+    if (is.null(marg_alpha)) {
+      marg_alpha<-rep(0.05,length(marg_power))
+      z<-qnorm(1 - marg_alpha)
+    }
+    
+    omega<-z + qnorm(marg_power)
+    
+     totpower <- unlist(lapply(r, function(x) {
+      sigma <- matrix(x, length(marg_power), length(marg_power))
+      diag(sigma) <- 1
+      
+      if (co) {
+        # All endpoints achieve power
+        return(pmvnorm(lower = z, mean = omega, corr = sigma))
+      } else {
+        # At least one endpoint achieves power
+        return(1 - pmvnorm(upper = z, mean = omega, corr = sigma))
+      }
+    }))
+  } 
+  
+  if (!is.null(totalpha) && !is.null(totpower)) {
+    res <- data.frame(totalpha = totalpha, totpower = totpower)
+  } else if (!is.null(totalpha)) {
+    res <- data.frame(totalpha = totalpha)
+  } else {
+    res <- data.frame(totpower = totpower)
+  }
+  res<-cbind(r,res)
+  row.names(res)<-NULL
+  return(res)
+}
+  
+
+```
+
+
+## Co-primary endpoints
+
+Multiple primary endpoints become co-primary endpoints when
+demonstrating an effect on each of the endpoints is required
+for a positive trial.
+
+With co-primary endpoints, there is no multiplicity problem because the
+overall, family-wise type I error rate (FWER) is strictly controlled at the maximum of the marginal
+alphas. However, co-primary endpoint testing increases the type II error rate (and reduces power) 
+  because there is more than one opportunity to make a type II error.
+
+For co-primary endpoints, we need to control the *conjunctive power*, 
+i.e. the probability of rejecting all null hypotheses simultaneously.
+
+We can distinguish these three scenarios:
+
+- Assuming independence, FWER and conjunctive power 
+  are the product of the individual, marginal alphas and powers, respectively.
+  The overall is then smaller then the individual ones, 
+  which is conservative for the type I error but results in a loss of power.
+- With a positive correlation (which often is the most likely scenario), FWER and conjunctive power are increasing
+  up to the minimum of the marginal ones when there is a perfect positive correlation (r=1).
+- With a negative correlation, FWER and conjunctive power are decreasing up to the sum of the marginals -1 (or 0 if negative) when there is a perfect negative correlation (r=-1).
+
+Overall,
+
+- the FWER is is bounded above by the minimum of the marginals, and
+- the conjunctive power is bounded below by the sum of the marginals - 1 (capped at 0, the Fréchet bound)
+  or the product of the marginal if negative correlations can be excluded.
+
+For example, with the conventional marginal alpha of 0.05 and marginal power of 0.8, the 
+upper boundary of the FWER is 0.05, the lower boundary of the power 0.6:
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+
+overall_opchar(marg_alpha = c(0.05,0.05), marg_power = c(0.8,0.8),
+  r = c(-1,0,1), co = TRUE)
+
+```
+
+
+```{r}
+#| echo: false
+#| results: hide
+#| message: false
+#| warning: false
+#| fig-height: 4
+#| fig-width: 6
+#| label: fig-cotype1
+#| fig-cap: "Family-wise type I error rate (FWER) for two co-primary endpoints with marginal alphas of 0.025 and/or 0.05.The FWER is bounded above by the minimum of the marginal alphas."
+
+
+rca<-data.frame(expand.grid(cor=seq(-1,1,by=0.01),
+  alpha1=c(0.025,0.05),alpha2=c(0.025,0.05)))
+res<-do.call(rbind,apply(rca,1,function(x) 
+  overall_opchar(marg_alpha=c(x["alpha1"], x["alpha2"]), r=x["cor"])))
+
+res<-cbind(rca,res)
+
+res |> 
+  mutate(alpha = paste0(as.factor(alpha1)," / ",as.factor(alpha2))) |>
+  filter(alpha!="0.05 / 0.025") |>
+  ggplot(aes(x=r, y=totalpha, group=alpha, color=alpha)) + 
+  geom_line() + 
+  geom_vline(xintercept=0, lty=2) +
+   scale_y_continuous(limits=c(0,0.1)) +
+  labs(y="Family-wise type I error rate", x= "Correlation", 
+       color="Marginal alpha") +
+  theme_bw()
+
+
+
+```
+
+<br> 
+<br>
+
+```{r}
+#| echo: false
+#| results: hide
+#| message: false
+#| warning: false
+#| fig-height: 4
+#| fig-width: 6
+#| label: fig-copower
+#| fig-cap: "Conjunctive power for two co-primary endpoints with marginal powers of 0.8 and/or 0.9. Conjunctive power is bounded below by the sum of the marginal powers minus one."
+
+rca<-data.frame(expand.grid(cor=seq(-1,1,by=0.01), power1=c(0.8,0.9),power2=c(0.8,0.9)))
+
+res<-do.call(rbind,apply(rca,1,function(x) 
+    overall_opchar(marg_alpha=c(0.05,0.05),r=x["cor"],
+    marg_power=c(x["power1"],x["power2"]))))
+
+res<-cbind(rca,res)
+
+
+res |> 
+  mutate(power = paste0(as.factor(power1)," / ",as.factor(power2))) |>
+  filter(power!="0.9 / 0.8") |>
+  ggplot(aes(x=r, y=totpower, group=power, color=power)) + 
+  geom_line() + 
+  geom_vline(xintercept=0, lty=2) +
+  scale_y_continuous(limits=c(0.5,1)) +
+  labs(y="Conjunctive power", x= "Correlation", color="Marginal power") +
+  theme_bw()
+
+```
+
+## Several primary endpoints
+
+A study might be designed such that success on any one of several endpoints could support a conclusion of effectiveness.
+This creates a primary endpoint family.
+
+This use of several endpoints creates a multiplicity problem because there are several ways to make 
+  a type I error, and control of the family-wise type I error rate (FWER) is critical.
+
+With several primary endpoints, we need to control the *disjunctive power*, i.e. the probability 
+    rejecting at least one null hypothesis when all alternative hypotheses are true.
+
+We can distinguish these three scenarios:
+
+- Assuming independence, the FWER and the disjunctive power are given by 
+  the sum minus the product of the corresponding marginal alphas and powers, respectively.
+  The overall is then larger then the individual ones, which is anti-conservative for the type I error and a gain of power.
+- With a positive correlation (which often is the most likely scenario),
+  FWER and disjunctive power are decreasing to the maximum of the marginal ones 
+  when there is a perfect positive correlation (r=1)
+- With a negative correlation, FWER and disjunctive power are increasing up to the sum of the marginals (or 1 if > 1) when there is a perfect negative correlation (r=-1).
+
+Overall, 
+
+- the FWER is bounded above by the sum of the marginal alphas (capped at 1), and 
+- the disjunctive power is bounded below by the maximum of the marginal powers.
+
+For example, With the conventional marginal alpha of 0.05 and marginal power of 0.8, the 
+upper boundary of the FWER is 0.1, the lower boundary of the disjunctive power 0.8:
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+
+
+overall_opchar(marg_alpha=c(0.05,0.05), marg_power=c(0.8,0.8), 
+  r=c(-1,0,1), co=FALSE)
+
+
+```
+
+
+```{r}
+#| echo: false
+#| results: hide
+#| message: false
+#| warning: false
+#| fig-height: 4
+#| fig-width: 6
+#| label: fig-2type1
+#| fig-cap: "Family-wise type I error rate (FWER) for two primary endpoints with marginal alphas of 0.025 and/or 0.05. 
+#|  The FWER is bounded above by the sum of the marginal alphas."
+
+rca<-data.frame(expand.grid(cor=seq(-1,1,by=0.1),
+  alpha1=c(0.025,0.05),alpha2=c(0.025,0.05)))
+res<-do.call(rbind,apply(rca,1,function(x) 
+  overall_opchar(marg_alpha=c(x["alpha1"], x["alpha2"]), r=x["cor"], co=FALSE)))
+
+res<-cbind(rca,res)
+
+res |> 
+  mutate(alpha = paste0(as.factor(alpha1)," / ",as.factor(alpha2))) |>
+  filter(alpha!="0.05 / 0.025") |>
+  ggplot(aes(x=r, y=totalpha, group=alpha, color=alpha)) + 
+  geom_line() + 
+  geom_vline(xintercept=0, lty=2) +
+   scale_y_continuous(limits=c(0,0.1)) +
+  labs(y="Family-wise type I error rate", x= "Correlation", 
+       color="Marginal alpha") +
+  theme_bw()
+
+
+```
+
+<br> 
+<br>
+
+```{r}
+#| echo: false
+#| results: hide
+#| message: false
+#| warning: false
+#| fig-height: 4
+#| fig-width: 6
+#| label: fig-2power
+#| fig-cap: "Disjunctive power for two primary endpoints with marginal powers of 0.8 and/or 0.9. Disjunctive power is bounded below by the maximum of the marginal powers."
+
+rca<-data.frame(expand.grid(cor=seq(-1,1,by=0.01), power1=c(0.8,0.9),power2=c(0.8,0.9)))
+
+res<-do.call(rbind,apply(rca,1,function(x) 
+    overall_opchar(marg_alpha=c(0.05,0.05),r=x["cor"],
+    marg_power=c(x["power1"],x["power2"]), co=FALSE)))
+
+res<-cbind(rca,res)
+
+
+res |> 
+  mutate(power = paste0(as.factor(power1)," / ",as.factor(power2))) |>
+  filter(power!="0.9 / 0.8") |>
+  ggplot(aes(x=r, y=totpower, group=power, color=power)) + 
+  geom_line() + 
+  geom_vline(xintercept=0, lty=2) +
+  scale_y_continuous(limits=c(0.5,1)) +
+  labs(y="Disjunctive power", x= "Correlation", color="Marginal power") +
+  theme_bw()
+
+```
+
+

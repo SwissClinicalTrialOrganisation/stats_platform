@@ -22,6 +22,12 @@ Baseline tables are included in every paper, yet they are time consuming to prod
 
 Sample size calculations are also required for virtually every project. As statisticians, we regularly receive questions on the topic. This vignette provides an overview of the topic and some recommendations for information you should bring the next time you need to discuss the sample size calculations with a statistician.
 
+## [Multiple endpoints in clinical trials](MultipleEndpoints.qmd)
+
+![](https://img.shields.io/badge/Target-Programmers-blue.svg) ![](https://img.shields.io/badge/Level-Intermediate-orange.svg)
+
+Multiple endpoints have consequences for type I and type II error rates. This vignette explains how to calculate the overall error rates from the marginal ones.
+
 ## [Adjusted survival curves](AdjustedSurvivalCurves.qmd)
 
 ![](https://img.shields.io/badge/Target-Programmers-blue.svg) ![](https://img.shields.io/badge/Level-Intermediate-orange.svg)
