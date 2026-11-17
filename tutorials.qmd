@@ -34,6 +34,12 @@ Survival curves are often depicted in an unadjusted state - i.e. the percentage 
 
 Most clinical trials require safety reporting to authorities. This tutorial gives some information on, primarily, annual safety reporting and introduces an R package for automatically filling out the swissethics annual safety report template.
 
+## [Complete separation and rare events](firth.qmd)
+
+![](https://img.shields.io/badge/Target-Statisticians-blue.svg) ![](https://img.shields.io/badge/Level-Intermediate-orange.svg)
+
+Logistic regression can break down when events are rare or when a predictor perfectly separates the outcome (complete separation), leading to biased or infinite estimates. This tutorial explains the problem, introduces Firth's bias-reduced logistic regression as a solution, and illustrates its behaviour with a simulation study.
+
 ## [Recommendations for compiling database in Excel](excel_db.qmd)
 
 ![](https://img.shields.io/badge/Target-Clinicians-blue.svg) 
