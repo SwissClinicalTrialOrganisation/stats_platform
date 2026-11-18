@@ -1,5 +1,5 @@
 ---
-title: "Mulitple Endpoints"
+title: "Error Rates for Multiple Endpoints"
 ---
 
 The [FDA guidance on multiple endpoints in clinical trials](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/multiple-endpoints-clinical-trials)
