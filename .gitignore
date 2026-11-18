@@ -3,3 +3,11 @@
 .Rhistory
 
 **/*.quarto_ipynb
+
+# knitr cache and temporary figure folders at the project root
+/*_cache/
+/*_files/
+
+# R artefacts
+Rplots.pdf
+*.Rout
