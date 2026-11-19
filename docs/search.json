@@ -36,6 +36,18 @@
     ]
   },
   {
+    "objectID": "tutorials.html#error-rates-for-multiple-endpoints-in-clinical-trials",
+    "href": "tutorials.html#error-rates-for-multiple-endpoints-in-clinical-trials",
+    "title": "Tutorials",
+    "section": "Error rates for multiple endpoints in clinical trials",
+    "text": "Error rates for multiple endpoints in clinical trials\n \nMultiple endpoints have consequences for type I and type II error rates. This vignette explains how to calculate the overall error rates from the marginal ones.",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Overview"
+    ]
+  },
+  {
     "objectID": "tutorials.html#adjusted-survival-curves",
     "href": "tutorials.html#adjusted-survival-curves",
     "title": "Tutorials",
@@ -108,107 +120,38 @@
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Welcome",
+    "objectID": "Links.html",
+    "href": "Links.html",
+    "title": "Links",
     "section": "",
-    "text": "This site provides access to tools and advice from statisticians of the SCTO Statistics & Methodology Platform.\nThe overarching aim of the statistics and methodological platform is to develop open access resources supporting the conception, completion and dissemination of clinical research. We help projects to:\n\ndevelop statistical softwares & packages,\nwrite guidelines & tutorials,\ninventory essential guidelines and available training options in Switzerland.\n\nAs part of the Swiss Clinical Trial Organisation (SCTO) network we are connected with other platforms (auditing, data management, education, monitoring, project management, regulatory affairs, safety) providing innovative tools for clinical research professionals. Additional tools and resources can be found on the Tools & Resources website by the SCTO Platforms.\n\n\n\n\n\n\nImportant\n\n\n\nThis is site is currently only for demonstration purposes. It is more conceptual than anything else.\nContent will be modified without warning or the site may be removed without notice.\nWe make no guarantees on the accuracy of the information presented.",
+    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.\n\n\n\n\nCenter for Reproducible Science\nThe CRS is an approved Center of Competence of the University of Zurich. The objective of the Center for Reproducible Science is to train the next generation of researchers in good research practices, to develop novel methodology related to reproducibility and replicability, and to improve the quality of scientific investigation using meta-science.",
     "crumbs": [
-      "Home"
+      "Home",
+      "Links"
     ]
   },
   {
-    "objectID": "excel_db.html",
-    "href": "excel_db.html",
-    "title": "Recommendations for compiling database in Excel",
+    "objectID": "IDMC.html",
+    "href": "IDMC.html",
+    "title": "SCTO statisticians in IDMC",
     "section": "",
-    "text": "This document is intended for anyone planning on compiling data into an Excel sheet. Although such practice does not comply with the Good Clinical Practice (GCP), some researchers still have recourse to it. Doing so without a statistician approving of certain features of the database can lead to problems later on ; during data cleaning, data processing and statistical analyses. For this reason, the present recommendations present the points one must observe in order mitigate as much as possible the problems that are inherent to Excel usage.\nThe document can be downloaded here",
+    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.\n\n\n\nStatisticians of the SCTO Statistics & Methodology Platform wrote a white paper describing the role of a statistician from a Swiss Clinical Trial Organisation (SCTO) associated body when taking on the role of independent statistician in an Independent Data Monitoring Committee (IDMC) for a study conducted with the participation of a SCTO network partner. In this statement, the Statistics and Methodology Platform proposes a framework for efficient collaboration between SCTO network partners to the assignment of statisticians to this role.\nThe full paper can be found and download on the SCTO website",
     "crumbs": [
       "Home",
-      "Tutorials",
-      "Recommendations for compiling database in Excel"
+      "Guidance",
+      "SCTO statisticians in IDMC"
     ]
   },
   {
-    "objectID": "courses.html",
-    "href": "courses.html",
-    "title": "Courses",
+    "objectID": "DataSharing.html",
+    "href": "DataSharing.html",
+    "title": "Data sharing",
     "section": "",
-    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.\nInformation presented in this website is updated twice a year. Where possible, a website is indicated where users can find complete and up-to-date description of the training.\nInstitutions are responsible for the quality of the training opportunities they provide.\n\n\nThis page provides a (non-exhaustive) list of statistically oriented courses that are held in Switzerland. A more general overview of clinical research training opportunities of the SCTO’s Clinical Trial Unit (CTU) Network can be found on the Clinical Research Careers website\n\n\nCourses are run in the following approximate locations:",
+    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.\n\n\nData sharing has become a requirement of many funding bodies and is becoming a scientific standard in many disciplines. In medical research, however, data sharing can conflict with clinicians’ obligation to protect patients’ privacy. Although general recommendations on data sharing already exist for clinical research, they are often not applicable to aspects specific to Switzerland. The guidance document from the SCTO’s CTU Network fills this gap: it provides practical recommendations for all relevant aspects of data sharing in accordance with legislation in Switzerland. Included in the guidelines are details of aspects are to be considered, decision-making criteria, examples, and checklists – all of which aim to support clinical research data sharing in practice.\nThe full guidance can be found onthe Tools & Resources website by the SCTO Platforms.",
     "crumbs": [
       "Home",
-      "Courses"
-    ]
-  },
-  {
-    "objectID": "AdjustedSurvivalCurves.html",
-    "href": "AdjustedSurvivalCurves.html",
-    "title": "Adjusted survival curves",
-    "section": "",
-    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.",
-    "crumbs": [
-      "Home",
-      "Tutorials",
-      "Adjusted survival curves"
-    ]
-  },
-  {
-    "objectID": "AdjustedSurvivalCurves.html#knowledge-from-the-crystal-ball",
-    "href": "AdjustedSurvivalCurves.html#knowledge-from-the-crystal-ball",
-    "title": "Adjusted survival curves",
-    "section": "Knowledge from the crystal ball",
-    "text": "Knowledge from the crystal ball\nBecause we simulated the data, we know that medication has no effect on mortality.",
-    "crumbs": [
-      "Home",
-      "Tutorials",
-      "Adjusted survival curves"
-    ]
-  },
-  {
-    "objectID": "AdjustedSurvivalCurves.html#descriptive-table",
-    "href": "AdjustedSurvivalCurves.html#descriptive-table",
-    "title": "Adjusted survival curves",
-    "section": "Descriptive table",
-    "text": "Descriptive table\nThe table below shows a descriptive summary of the study population, by medication.\ndata %&gt;% \n  tbl_summary(by = medi) \n\n\n\n\n\n\nCharacteristic\n0, N = 1721\n1, N = 3281\n\n\n\n\nfup\n8 (3, 17)\n6 (3, 14)\n\n\ndeath\n65 (38%)\n156 (48%)\n\n\nenzyme\n64 (37%)\n199 (61%)\n\n\nfemale\n102 (59%)\n210 (64%)\n\n\n\n1 Median (IQR); n (%)",
-    "crumbs": [
-      "Home",
-      "Tutorials",
-      "Adjusted survival curves"
-    ]
-  },
-  {
-    "objectID": "AdjustedSurvivalCurves.html#unadjusted-kaplan-meier-curve-and-cox-modelling",
-    "href": "AdjustedSurvivalCurves.html#unadjusted-kaplan-meier-curve-and-cox-modelling",
-    "title": "Adjusted survival curves",
-    "section": "Unadjusted Kaplan-Meier curve and Cox-modelling",
-    "text": "Unadjusted Kaplan-Meier curve and Cox-modelling\nA naive (unadjusted) survival analysis of the data reveals the following Kaplan-Meier plot. We conclude that the medication has an effect on survival.\n\nmod &lt;- survfit(Surv(fup, death) ~ medi, data = data)\nggsurvplot(mod, data = data, palette = c(\"#CC0000\", \"black\"), censor = FALSE)\n\n\n\n\n\n\n\n\n\nmod_cox_unadjusted &lt;- coxph(Surv(fup, death) ~ medi, data = data)\nmod_cox_unadjusted\n\nCall:\ncoxph(formula = Surv(fup, death) ~ medi, data = data)\n\n       coef exp(coef) se(coef)     z      p\nmedi 0.3345    1.3973   0.1479 2.262 0.0237\n\nLikelihood ratio test=5.34  on 1 df, p=0.0209\nn= 500, number of events= 221 \n\n\nAn unadjusted Cox proportional hazard model shows that patients with medication have 1.4 higher hazard of death compared to those without medication.\n\nmod_cox_adjusted &lt;- coxph(Surv(fup, death) ~ medi + enzyme + female, data = data)\nmod_cox_adjusted\n\nCall:\ncoxph(formula = Surv(fup, death) ~ medi + enzyme + female, data = data)\n\n           coef exp(coef) se(coef)      z      p\nmedi    0.01920   1.01938  0.14993  0.128  0.898\nenzyme  2.12737   8.39280  0.20308 10.475 &lt;2e-16\nfemale -0.03787   0.96284  0.16500 -0.230  0.818\n\nLikelihood ratio test=179.2  on 3 df, p=&lt; 2.2e-16\nn= 500, number of events= 221 \n\n\nWhat happens if we adjust for enzym and sex? Then the effect of the medication on death vanishes (hazard ratio=1.02).",
-    "crumbs": [
-      "Home",
-      "Tutorials",
-      "Adjusted survival curves"
-    ]
-  },
-  {
-    "objectID": "AdjustedSurvivalCurves.html#ipw-modelling",
-    "href": "AdjustedSurvivalCurves.html#ipw-modelling",
-    "title": "Adjusted survival curves",
-    "section": "IPW modelling",
-    "text": "IPW modelling\nAn IPW modelling approach constructs treatment weights (here medication) given known covariates (here sex and enzyme) using a logistic regression model.\n\n# IPW denominator\nmod &lt;- glm(medi ~ female + enzyme, data = data, family = binomial())\n\ndata$ipw &lt;- NA\n# Probabilty of treatment\ndata$ipw &lt;- predict(mod, data = data, type = \"response\")\n# Probabilty of non-treatment\ndata$ipw[data$medi==0] &lt;- 1 - predict(mod, data = data, type = \"response\")[data$medi == 0]\n\nWe construct stabilized weights, since they can provide narrower confidence intervals (Hernán and Robins (2022)).\n\n# Stabilized weights\nmod0 &lt;- glm(medi ~ 1, data = data, family = binomial())\ndata$ipw0 &lt;- predict(mod0, data = data, type = \"response\")\ndata$ipw0[data$medi == 0] &lt;- 1 - predict(mod0, data = data, type = \"response\")[data$medi == 0]\ndata$ipw &lt;- data$ipw0 / data$ipw\n\nAn IPW adjusted Kaplan-Meier curve reveals that medication has no effect on survival:\n\n# Set survey design\nsvy_design &lt;- svydesign(id = ~1, weights = ~ipw, data = data)\n\n# IPW adjusted Kaplan-Meier\nkm_fit &lt;- svykm(Surv(fup, death) ~ medi, design = svy_design)\n\nkm_df &lt;- data.frame(time = km_fit$`1`$time, surv = km_fit$`1`$surv, strata = \"medi=1\")\nkm_df &lt;- bind_rows(km_df, data.frame(time=km_fit$`0`$time, surv=km_fit$`0`$surv, strata = \"medi=0\"))\nggsurvplot_df(km_df, palette = c(\"#CC0000\", \"black\"), censor=FALSE)\n\n\n\n\n\n\n\n\n\nmod_cox_ipw_adjusted &lt;- svycoxph(Surv(fup, death) ~ medi, design = svy_design)\nsummary(mod_cox_ipw_adjusted)\n\nIndependent Sampling design (with replacement)\nsvydesign(id = ~1, weights = ~ipw, data = data)\n\n\nCall:\nsvycoxph(formula = Surv(fup, death) ~ medi, design = svy_design)\n\n  n= 500, number of events= 221 \n\n         coef exp(coef) se(coef) robust se      z Pr(&gt;|z|)\nmedi -0.04057   0.96024  0.14165   0.14255 -0.285    0.776\n\n     exp(coef) exp(-coef) lower .95 upper .95\nmedi    0.9602      1.041    0.7262      1.27\n\nConcordance= 0.494  (se = 0.019 )\nLikelihood ratio test= NA  on 1 df,   p=NA\nWald test            = 0.08  on 1 df,   p=0.8\nScore (logrank) test = NA  on 1 df,   p=NA\n\n  (Note: the likelihood ratio and score tests assume independence of\n     observations within a cluster, the Wald and robust score tests do not).\n\n\nThis is confirmed by an IPW adjusted Cox regression model (hazard ratio=0.96).",
-    "crumbs": [
-      "Home",
-      "Tutorials",
-      "Adjusted survival curves"
-    ]
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About us & contact",
-    "section": "",
-    "text": "About us\nThis site was developed by statisticians of the SCTO Statistics & Methodology Platform.\nThe SCTO Statistics & Methodology Platform is a network of statisticians working in Swiss Clinical Trial Units, universities, and cantonal hospitals. As part of the Swiss Clinical Trial Organisation (SCTO) network we are connected with other platforms (auditing, data management, education, monitoring, project management, regulatory affairs, safety) providing innovative tools for clinical research professionals. More information can be found on the Tools & Resources website by the SCTO Platforms.\n\n\nGet in touch with us\nDo you have any questions or suggestions? Feel free to contact us using the form here.\nDirect support for clinical studies and research projects can also be provided by your local CTU:\n\nDKF Basel\nDCR, Bern\nCRC Geneva\nCRC Lausanne\nCTU-EOC Lugano\nCTU St.Gallen\nCTC Zürich",
-    "crumbs": [
-      "Home",
-      "About us & contact"
+      "Guidance",
+      "Data sharing"
     ]
   },
   {
@@ -272,38 +215,143 @@
     ]
   },
   {
-    "objectID": "DataSharing.html",
-    "href": "DataSharing.html",
-    "title": "Data sharing",
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About us & contact",
     "section": "",
-    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.\n\n\nData sharing has become a requirement of many funding bodies and is becoming a scientific standard in many disciplines. In medical research, however, data sharing can conflict with clinicians’ obligation to protect patients’ privacy. Although general recommendations on data sharing already exist for clinical research, they are often not applicable to aspects specific to Switzerland. The guidance document from the SCTO’s CTU Network fills this gap: it provides practical recommendations for all relevant aspects of data sharing in accordance with legislation in Switzerland. Included in the guidelines are details of aspects are to be considered, decision-making criteria, examples, and checklists – all of which aim to support clinical research data sharing in practice.\nThe full guidance can be found onthe Tools & Resources website by the SCTO Platforms.",
+    "text": "About us\nThis site was developed by statisticians of the SCTO Statistics & Methodology Platform.\nThe SCTO Statistics & Methodology Platform is a network of statisticians working in Swiss Clinical Trial Units, universities, and cantonal hospitals. As part of the Swiss Clinical Trial Organisation (SCTO) network we are connected with other platforms (auditing, data management, education, monitoring, project management, regulatory affairs, safety) providing innovative tools for clinical research professionals. More information can be found on the Tools & Resources website by the SCTO Platforms.\n\n\nGet in touch with us\nDo you have any questions or suggestions? Feel free to contact us using the form here.\nDirect support for clinical studies and research projects can also be provided by your local CTU:\n\nDKF Basel\nDCR, Bern\nCRC Geneva\nCRC Lausanne\nCTU-EOC Lugano\nCTU St.Gallen\nCTC Zürich",
     "crumbs": [
       "Home",
-      "Guidance",
-      "Data sharing"
+      "About us & contact"
     ]
   },
   {
-    "objectID": "IDMC.html",
-    "href": "IDMC.html",
-    "title": "SCTO statisticians in IDMC",
+    "objectID": "AdjustedSurvivalCurves.html",
+    "href": "AdjustedSurvivalCurves.html",
+    "title": "Adjusted survival curves",
     "section": "",
-    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.\n\n\n\nStatisticians of the SCTO Statistics & Methodology Platform wrote a white paper describing the role of a statistician from a Swiss Clinical Trial Organisation (SCTO) associated body when taking on the role of independent statistician in an Independent Data Monitoring Committee (IDMC) for a study conducted with the participation of a SCTO network partner. In this statement, the Statistics and Methodology Platform proposes a framework for efficient collaboration between SCTO network partners to the assignment of statisticians to this role.\nThe full paper can be found and download on the SCTO website",
+    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.",
     "crumbs": [
       "Home",
-      "Guidance",
-      "SCTO statisticians in IDMC"
+      "Tutorials",
+      "Adjusted survival curves"
     ]
   },
   {
-    "objectID": "Links.html",
-    "href": "Links.html",
-    "title": "Links",
-    "section": "",
-    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.\n\n\n\n\nCenter for Reproducible Science\nThe CRS is an approved Center of Competence of the University of Zurich. The objective of the Center for Reproducible Science is to train the next generation of researchers in good research practices, to develop novel methodology related to reproducibility and replicability, and to improve the quality of scientific investigation using meta-science.",
+    "objectID": "AdjustedSurvivalCurves.html#knowledge-from-the-crystal-ball",
+    "href": "AdjustedSurvivalCurves.html#knowledge-from-the-crystal-ball",
+    "title": "Adjusted survival curves",
+    "section": "Knowledge from the crystal ball",
+    "text": "Knowledge from the crystal ball\nBecause we simulated the data, we know that medication has no effect on mortality.",
     "crumbs": [
       "Home",
-      "Links"
+      "Tutorials",
+      "Adjusted survival curves"
+    ]
+  },
+  {
+    "objectID": "AdjustedSurvivalCurves.html#descriptive-table",
+    "href": "AdjustedSurvivalCurves.html#descriptive-table",
+    "title": "Adjusted survival curves",
+    "section": "Descriptive table",
+    "text": "Descriptive table\nThe table below shows a descriptive summary of the study population, by medication.\ndata %&gt;% \n  tbl_summary(by = medi) \n\n\n\n\n\n\nCharacteristic\n0, N = 1721\n1, N = 3281\n\n\n\n\nfup\n8 (3, 17)\n6 (3, 14)\n\n\ndeath\n65 (38%)\n156 (48%)\n\n\nenzyme\n64 (37%)\n199 (61%)\n\n\nfemale\n102 (59%)\n210 (64%)\n\n\n\n1 Median (IQR); n (%)",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Adjusted survival curves"
+    ]
+  },
+  {
+    "objectID": "AdjustedSurvivalCurves.html#unadjusted-kaplan-meier-curve-and-cox-modelling",
+    "href": "AdjustedSurvivalCurves.html#unadjusted-kaplan-meier-curve-and-cox-modelling",
+    "title": "Adjusted survival curves",
+    "section": "Unadjusted Kaplan-Meier curve and Cox-modelling",
+    "text": "Unadjusted Kaplan-Meier curve and Cox-modelling\nA naive (unadjusted) survival analysis of the data reveals the following Kaplan-Meier plot. We conclude that the medication has an effect on survival.\n\nmod &lt;- survfit(Surv(fup, death) ~ medi, data = data)\nggsurvplot(mod, data = data, palette = c(\"#CC0000\", \"black\"), censor = FALSE)\n\n\n\n\n\n\n\n\n\nmod_cox_unadjusted &lt;- coxph(Surv(fup, death) ~ medi, data = data)\nmod_cox_unadjusted\n\nCall:\ncoxph(formula = Surv(fup, death) ~ medi, data = data)\n\n       coef exp(coef) se(coef)     z      p\nmedi 0.3345    1.3973   0.1479 2.262 0.0237\n\nLikelihood ratio test=5.34  on 1 df, p=0.0209\nn= 500, number of events= 221 \n\n\nAn unadjusted Cox proportional hazard model shows that patients with medication have 1.4 higher hazard of death compared to those without medication.\n\nmod_cox_adjusted &lt;- coxph(Surv(fup, death) ~ medi + enzyme + female, data = data)\nmod_cox_adjusted\n\nCall:\ncoxph(formula = Surv(fup, death) ~ medi + enzyme + female, data = data)\n\n           coef exp(coef) se(coef)      z      p\nmedi    0.01920   1.01938  0.14993  0.128  0.898\nenzyme  2.12737   8.39280  0.20308 10.475 &lt;2e-16\nfemale -0.03787   0.96284  0.16500 -0.230  0.818\n\nLikelihood ratio test=179.2  on 3 df, p=&lt; 2.2e-16\nn= 500, number of events= 221 \n\n\nWhat happens if we adjust for enzym and sex? Then the effect of the medication on death vanishes (hazard ratio=1.02).",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Adjusted survival curves"
+    ]
+  },
+  {
+    "objectID": "AdjustedSurvivalCurves.html#ipw-modelling",
+    "href": "AdjustedSurvivalCurves.html#ipw-modelling",
+    "title": "Adjusted survival curves",
+    "section": "IPW modelling",
+    "text": "IPW modelling\nAn IPW modelling approach constructs treatment weights (here medication) given known covariates (here sex and enzyme) using a logistic regression model.\n\n# IPW denominator\nmod &lt;- glm(medi ~ female + enzyme, data = data, family = binomial())\n\ndata$ipw &lt;- NA\n# Probabilty of treatment\ndata$ipw &lt;- predict(mod, data = data, type = \"response\")\n# Probabilty of non-treatment\ndata$ipw[data$medi==0] &lt;- 1 - predict(mod, data = data, type = \"response\")[data$medi == 0]\n\nWe construct stabilized weights, since they can provide narrower confidence intervals (Hernán and Robins (2022)).\n\n# Stabilized weights\nmod0 &lt;- glm(medi ~ 1, data = data, family = binomial())\ndata$ipw0 &lt;- predict(mod0, data = data, type = \"response\")\ndata$ipw0[data$medi == 0] &lt;- 1 - predict(mod0, data = data, type = \"response\")[data$medi == 0]\ndata$ipw &lt;- data$ipw0 / data$ipw\n\nAn IPW adjusted Kaplan-Meier curve reveals that medication has no effect on survival:\n\n# Set survey design\nsvy_design &lt;- svydesign(id = ~1, weights = ~ipw, data = data)\n\n# IPW adjusted Kaplan-Meier\nkm_fit &lt;- svykm(Surv(fup, death) ~ medi, design = svy_design)\n\nkm_df &lt;- data.frame(time = km_fit$`1`$time, surv = km_fit$`1`$surv, strata = \"medi=1\")\nkm_df &lt;- bind_rows(km_df, data.frame(time=km_fit$`0`$time, surv=km_fit$`0`$surv, strata = \"medi=0\"))\nggsurvplot_df(km_df, palette = c(\"#CC0000\", \"black\"), censor=FALSE)\n\n\n\n\n\n\n\n\n\nmod_cox_ipw_adjusted &lt;- svycoxph(Surv(fup, death) ~ medi, design = svy_design)\nsummary(mod_cox_ipw_adjusted)\n\nIndependent Sampling design (with replacement)\nsvydesign(id = ~1, weights = ~ipw, data = data)\n\n\nCall:\nsvycoxph(formula = Surv(fup, death) ~ medi, design = svy_design)\n\n  n= 500, number of events= 221 \n\n         coef exp(coef) se(coef) robust se      z Pr(&gt;|z|)\nmedi -0.04057   0.96024  0.14165   0.14255 -0.285    0.776\n\n     exp(coef) exp(-coef) lower .95 upper .95\nmedi    0.9602      1.041    0.7262      1.27\n\nConcordance= 0.494  (se = 0.019 )\nLikelihood ratio test= NA  on 1 df,   p=NA\nWald test            = 0.08  on 1 df,   p=0.8\nScore (logrank) test = NA  on 1 df,   p=NA\n\n  (Note: the likelihood ratio and score tests assume independence of\n     observations within a cluster, the Wald and robust score tests do not).\n\n\nThis is confirmed by an IPW adjusted Cox regression model (hazard ratio=0.96).",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Adjusted survival curves"
+    ]
+  },
+  {
+    "objectID": "courses.html",
+    "href": "courses.html",
+    "title": "Courses",
+    "section": "",
+    "text": "Warning\n\n\n\nThis page is under development. Changes should be expected.\nInformation presented in this website is updated twice a year. Where possible, a website is indicated where users can find complete and up-to-date description of the training.\nInstitutions are responsible for the quality of the training opportunities they provide.\n\n\nThis page provides a (non-exhaustive) list of statistically oriented courses that are held in Switzerland. A more general overview of clinical research training opportunities of the SCTO’s Clinical Trial Unit (CTU) Network can be found on the Clinical Research Careers website\n\n\nCourses are run in the following approximate locations:",
+    "crumbs": [
+      "Home",
+      "Courses"
+    ]
+  },
+  {
+    "objectID": "excel_db.html",
+    "href": "excel_db.html",
+    "title": "Recommendations for compiling database in Excel",
+    "section": "",
+    "text": "This document is intended for anyone planning on compiling data into an Excel sheet. Although such practice does not comply with the Good Clinical Practice (GCP), some researchers still have recourse to it. Doing so without a statistician approving of certain features of the database can lead to problems later on ; during data cleaning, data processing and statistical analyses. For this reason, the present recommendations present the points one must observe in order mitigate as much as possible the problems that are inherent to Excel usage.\nThe document can be downloaded here",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Recommendations for compiling database in Excel"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome",
+    "section": "",
+    "text": "This site provides access to tools and advice from statisticians of the SCTO Statistics & Methodology Platform.\nThe overarching aim of the statistics and methodological platform is to develop open access resources supporting the conception, completion and dissemination of clinical research. We help projects to:\n\ndevelop statistical softwares & packages,\nwrite guidelines & tutorials,\ninventory essential guidelines and available training options in Switzerland.\n\nAs part of the Swiss Clinical Trial Organisation (SCTO) network we are connected with other platforms (auditing, data management, education, monitoring, project management, regulatory affairs, safety) providing innovative tools for clinical research professionals. Additional tools and resources can be found on the Tools & Resources website by the SCTO Platforms.\n\n\n\n\n\n\nImportant\n\n\n\nThis is site is currently only for demonstration purposes. It is more conceptual than anything else.\nContent will be modified without warning or the site may be removed without notice.\nWe make no guarantees on the accuracy of the information presented.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "MultipleEndpoints.html",
+    "href": "MultipleEndpoints.html",
+    "title": "Error Rates for Multiple Endpoints",
+    "section": "",
+    "text": "The FDA guidance on multiple endpoints in clinical trials lists four types of multiple endpoints:\nThe former two have some consequences on overall family-wise type I and II error rates, we will discuss here. In both situations, the overall error rates can be calculated form the individual, marginal error rates using a multivariate normal distribution:\nlibrary(mvtnorm)\nlibrary(ggplot2)\nlibrary(dplyr)\n\noverall_opchar&lt;-function(marg_alpha = NULL, marg_power = NULL, r, co = TRUE) {\n  \n  if (is.null(marg_alpha) && is.null(marg_power)) {\n    stop(\"At least one of marg_alpha and marg_power must be given.\")\n  }\n  \n  totalpha &lt;- NULL\n  totpower &lt;- NULL\n  \n  if (!is.null(marg_alpha)) {\n     \n    if (length(marg_alpha)&lt;2) {\n      stop(\"marg_alpha has to be of length 2 or larger\")\n    }\n    \n    z&lt;-qnorm(1 - marg_alpha)\n    \n    totalpha &lt;- unlist(lapply(r, function(x) {\n      sigma &lt;- matrix(x, length(marg_alpha), length(marg_alpha))\n      diag(sigma) &lt;- 1\n      \n      if (co) {\n         # All endpoints must be significant\n        return(pmvnorm(lower = z, corr = sigma))\n      } else {\n         # One endpoint must be significant\n        return(1 - pmvnorm(upper = z, corr = sigma))\n      }\n    })) \n   }  \n  \n  if (!is.null(marg_power)) {\n    \n    if (length(marg_power)&lt;2) {\n      stop(\"marg_power has to be of length 2 or larger\")\n     }\n    \n    #use any alpha if not given, power does not depend on it.\n    if (is.null(marg_alpha)) {\n      marg_alpha&lt;-rep(0.05,length(marg_power))\n      z&lt;-qnorm(1 - marg_alpha)\n    }\n    \n    omega&lt;-z + qnorm(marg_power)\n    \n     totpower &lt;- unlist(lapply(r, function(x) {\n      sigma &lt;- matrix(x, length(marg_power), length(marg_power))\n      diag(sigma) &lt;- 1\n      \n      if (co) {\n        # All endpoints achieve power\n        return(pmvnorm(lower = z, mean = omega, corr = sigma))\n      } else {\n        # At least one endpoint achieves power\n        return(1 - pmvnorm(upper = z, mean = omega, corr = sigma))\n      }\n    }))\n  } \n  \n  if (!is.null(totalpha) && !is.null(totpower)) {\n    res &lt;- data.frame(totalpha = totalpha, totpower = totpower)\n  } else if (!is.null(totalpha)) {\n    res &lt;- data.frame(totalpha = totalpha)\n  } else {\n    res &lt;- data.frame(totpower = totpower)\n  }\n  res&lt;-cbind(r,res)\n  row.names(res)&lt;-NULL\n  return(res)\n}",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Error Rates for Multiple Endpoints"
+    ]
+  },
+  {
+    "objectID": "MultipleEndpoints.html#co-primary-endpoints",
+    "href": "MultipleEndpoints.html#co-primary-endpoints",
+    "title": "Error Rates for Multiple Endpoints",
+    "section": "Co-primary endpoints",
+    "text": "Co-primary endpoints\nMultiple primary endpoints become co-primary endpoints when demonstrating an effect on each of the endpoints is required for a positive trial.\nWith co-primary endpoints, there is no multiplicity problem because the overall, family-wise type I error rate (FWER) is strictly controlled at the maximum of the marginal alphas. However, co-primary endpoint testing increases the type II error rate (and reduces power) because there is more than one opportunity to make a type II error.\nFor co-primary endpoints, we need to control the conjunctive power, i.e. the probability of rejecting all null hypotheses simultaneously.\nWe can distinguish these three scenarios:\n\nAssuming independence, FWER and conjunctive power are the product of the individual, marginal alphas and powers, respectively. The overall is then smaller then the individual ones, which is conservative for the type I error but results in a loss of power.\nWith a positive correlation (which often is the most likely scenario), FWER and conjunctive power are increasing up to the minimum of the marginal ones when there is a perfect positive correlation (r=1).\nWith a negative correlation, FWER and conjunctive power are decreasing up to the sum of the marginals -1 (or 0 if negative) when there is a perfect negative correlation (r=-1).\n\nOverall,\n\nthe FWER is is bounded above by the minimum of the marginals, and\nthe conjunctive power is bounded below by the sum of the marginals - 1 (capped at 0, the Fréchet bound) or the product of the marginal if negative correlations can be excluded.\n\nFor example, with the conventional marginal alpha of 0.05 and marginal power of 0.8, the upper boundary of the FWER is 0.05, the lower boundary of the power 0.6:\n\noverall_opchar(marg_alpha = c(0.05,0.05), marg_power = c(0.8,0.8),\n  r = c(-1,0,1), co = TRUE)\n\n   r totalpha totpower\n1 -1   0.0000     0.60\n2  0   0.0025     0.64\n3  1   0.0500     0.80\n\n\n\n\n\n\n\n\n\n\nFigure 1: Family-wise type I error rate (FWER) for two co-primary endpoints with marginal alphas of 0.025 and/or 0.05.The FWER is bounded above by the minimum of the marginal alphas.\n\n\n\n\n\n \n\n\n\n\n\n\n\n\nFigure 2: Conjunctive power for two co-primary endpoints with marginal powers of 0.8 and/or 0.9. Conjunctive power is bounded below by the sum of the marginal powers minus one.",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Error Rates for Multiple Endpoints"
+    ]
+  },
+  {
+    "objectID": "MultipleEndpoints.html#several-primary-endpoints",
+    "href": "MultipleEndpoints.html#several-primary-endpoints",
+    "title": "Error Rates for Multiple Endpoints",
+    "section": "Several primary endpoints",
+    "text": "Several primary endpoints\nA study might be designed such that success on any one of several endpoints could support a conclusion of effectiveness. This creates a primary endpoint family.\nThis use of several endpoints creates a multiplicity problem because there are several ways to make a type I error, and control of the family-wise type I error rate (FWER) is critical.\nWith several primary endpoints, we need to control the disjunctive power, i.e. the probability rejecting at least one null hypothesis when all alternative hypotheses are true.\nWe can distinguish these three scenarios:\n\nAssuming independence, the FWER and the disjunctive power are given by the sum minus the product of the corresponding marginal alphas and powers, respectively. The overall is then larger then the individual ones, which is anti-conservative for the type I error and a gain of power.\nWith a positive correlation (which often is the most likely scenario), FWER and disjunctive power are decreasing to the maximum of the marginal ones when there is a perfect positive correlation (r=1)\nWith a negative correlation, FWER and disjunctive power are increasing up to the sum of the marginals (or 1 if &gt; 1) when there is a perfect negative correlation (r=-1).\n\nOverall,\n\nthe FWER is bounded above by the sum of the marginal alphas (capped at 1), and\nthe disjunctive power is bounded below by the maximum of the marginal powers.\n\nFor example, With the conventional marginal alpha of 0.05 and marginal power of 0.8, the upper boundary of the FWER is 0.1, the lower boundary of the disjunctive power 0.8:\n\noverall_opchar(marg_alpha=c(0.05,0.05), marg_power=c(0.8,0.8), \n  r=c(-1,0,1), co=FALSE)\n\n   r totalpha totpower\n1 -1   0.1000     1.00\n2  0   0.0975     0.96\n3  1   0.0500     0.80\n\n\n\n\n\n\n\n\n\n\nFigure 3: Family-wise type I error rate (FWER) for two primary endpoints with marginal alphas of 0.025 and/or 0.05. The FWER is bounded above by the sum of the marginal alphas.\n\n\n\n\n\n \n\n\n\n\n\n\n\n\nFigure 4: Disjunctive power for two primary endpoints with marginal powers of 0.8 and/or 0.9. Disjunctive power is bounded below by the maximum of the marginal powers.",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Error Rates for Multiple Endpoints"
     ]
   },
   {
