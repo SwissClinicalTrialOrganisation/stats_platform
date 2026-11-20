@@ -1,7 +1,7 @@
 @Manual{r2021,
-    title = {R: A Language and Environment for Statistical Computing},
-    author = {{R Core Team}},
-    organization = {R Foundation for Statistical Computing},
+    title = {\textsf{R}: A Language and Environment for Statistical Computing},
+    author = {{\textsf{R} Core Team}},
+    organization = {\textsf{R} Foundation for Statistical Computing},
     address = {Vienna, Austria},
     year = {2021},
     url = {https://www.R-project.org/},
@@ -24,7 +24,7 @@
 }
 
 @Article{presize,
-    title = {`presize`: An R-package for precision-based sample size calculation in clinical research},
+    title = {\texttt{presize}: An \textsf{R}-package for precision-based sample size calculation in clinical research},
     author = {Alan G. Haynes and Armando Lenz and Odile Stalder and Andreas Limacher},
     year = {2021},
     journal = {Journal of Open Source Software},
@@ -35,10 +35,10 @@
   }
 
 @Manual{sse,
-    title = {sse: Sample Size Estimation},
+    title = {\texttt{sse}: Sample Size Estimation},
     author = {Thomas Fabbro},
     year = {2021},
-    note = {R package version 0.7-17},
+    note = {\textsf{R} package version 0.7-17},
     url = {https://CRAN.R-project.org/package=sse},
   }
 
@@ -159,9 +159,9 @@ journal={gtsummary}}
 
 
 @article{Strbel2019atableCT,
-  title={atable: Create Tables for Clinical Trial Reports},
+  title={\texttt{atable}: Create Tables for Clinical Trial Reports},
   author={Armin Michael Str{\"o}bel},
-  journal={R J.},
+  journal={\textsf{R} J.},
   year={2019},
   volume={11},
   pages={137}
@@ -193,4 +193,54 @@ abstract = {Kaplan–Meier survival curves and the associated nonparametric log 
     year = {2022},
     publisher = {Chapman & Hall/CRC},
     address = {Boca Raton}
+}
+
+@article{firth1993,
+author  = {Firth, David},
+title   = {Bias reduction of maximum likelihood estimates},
+journal = {Biometrika},
+year    = {1993},
+volume  = {80},
+number  = {1},
+pages   = {27--38},
+doi     = {10.1093/biomet/80.1.27}
+}
+
+@article{kosmidis2021,
+author  = {Kosmidis, Ioannis and Firth, David},
+title   = {Jeffreys-prior penalty, finiteness and shrinkage in binomial-response generalized linear models},
+journal = {Biometrika},
+year    = {2021},
+volume  = {108},
+number  = {1},
+pages   = {71--82},
+doi     = {10.1093/biomet/asaa052}
+}
+
+@article{kosmidis2009,
+author  = {Kosmidis, Ioannis and Firth, David},
+title   = {Bias reduction in exponential family nonlinear models},
+journal = {Biometrika},
+year    = {2009},
+volume  = {96},
+number  = {4},
+pages   = {793--804},
+doi     = {10.1093/biomet/asp055}
+}
+
+@manual{heinze2024,
+author = {Heinze, Georg and Ploner, Meinhard and Jiricka, Lena},
+title  = {\texttt{logistf}: Firth's Bias-Reduced Logistic Regression},
+year   = {2024},
+note   = {\textsf{R} package version 1.26.0},
+url    = {https://CRAN.R-project.org/package=logistf}
+}
+
+@manual{heinze2023coxphf,
+author = {Heinze, Georg and Ploner, Meinhard and Jiricka, Lena and Steiner, Gregor},
+title  = {\texttt{coxphf}: Cox Regression with Firth's Penalized Likelihood},
+year   = {2023},
+note   = {\textsf{R} package version 1.13.4},
+url    = {https://CRAN.R-project.org/package=coxphf},
+doi    = {10.32614/CRAN.package.coxphf}
 }

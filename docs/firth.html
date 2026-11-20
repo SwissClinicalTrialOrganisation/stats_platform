@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Firth logistic regression – Statistics and Methodology - tools and support</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./doc/Red (3D)_RGB@2x.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d166b450ba5a8e9f7a0ab969bf6592c1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-bff56f40ef3a076a13420213357a0400.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-231a209d93a50ff88d96e1ecded320c4.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./doc/Red (3D)_RGB@2x.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Statistics and Methodology - tools and support</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorials.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./firth.html">Firth logistic regression</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About us &amp; contact</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Guidance</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./DataSharing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data sharing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ReportingGuidelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reporting guidelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./IDMC.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SCTO statisticians in IDMC</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./SampleSizeCalculation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sample size calculation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./baselinetables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Make a baseline table</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./MultipleEndpoints.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Error Rates for Multiple Endpoints</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./AdjustedSurvivalCurves.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adjusted survival curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./safetyreporting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Safety reporting in clinical trials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./firth.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Firth logistic regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./excel_db.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Recommendations for compiling database in Excel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials.html#others" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Other tutorials</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./courses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Courses</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Software packages</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Links.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Links</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#problem" id="toc-problem" class="nav-link active" data-scroll-target="#problem">Problem</a>
+  <ul class="collapse">
+  <li><a href="#what-is-separation" id="toc-what-is-separation" class="nav-link" data-scroll-target="#what-is-separation">What is separation?</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
+  </ul></li>
+  <li><a href="#theory" id="toc-theory" class="nav-link" data-scroll-target="#theory">Theory</a></li>
+  <li><a href="#solution" id="toc-solution" class="nav-link" data-scroll-target="#solution">Solution</a></li>
+  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a>
+  <ul class="collapse">
+  <li><a href="#setup-mle-vs-firth-regression" id="toc-setup-mle-vs-firth-regression" class="nav-link" data-scroll-target="#setup-mle-vs-firth-regression">Setup: MLE vs Firth regression</a></li>
+  <li><a href="#varying-sample-size" id="toc-varying-sample-size" class="nav-link" data-scroll-target="#varying-sample-size">Varying sample size</a></li>
+  <li><a href="#varying-prevalence" id="toc-varying-prevalence" class="nav-link" data-scroll-target="#varying-prevalence">Varying prevalence</a></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  </ul></li>
+  <li><a href="#moving-forward" id="toc-moving-forward" class="nav-link" data-scroll-target="#moving-forward">Moving forward</a>
+  <ul class="collapse">
+  <li><a href="#recommendation" id="toc-recommendation" class="nav-link" data-scroll-target="#recommendation">Recommendation</a></li>
+  <li><a href="#sec-sap" id="toc-sec-sap" class="nav-link" data-scroll-target="#sec-sap">Code and SAP wording</a></li>
+  <li><a href="#software" id="toc-software" class="nav-link" data-scroll-target="#software">Software</a></li>
+  <li><a href="#session-info" id="toc-session-info" class="nav-link" data-scroll-target="#session-info">Session info</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorials.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./firth.html">Firth logistic regression</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Firth logistic regression</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style type="text/css">
+  figure.quarto-float-tbl figcaption.quarto-float-caption-bottom {
+    text-align:left
+  }
+  /* no gray striping/hover shading; tables only as wide as their content */
+  table.table {
+    --bs-table-striped-bg: transparent;
+    --bs-table-hover-bg: transparent;
+    --bs-table-bg: transparent;
+    --bs-table-accent-bg: transparent;
+    width: auto !important;
+  }
+  table.table > :not(caption) > * > * { background-color: transparent; box-shadow: none; }
+  table.table { margin-left: auto; margin-right: auto; }
+  table.table th, table.table td { white-space: nowrap; }
+  /* metrics table: allow wrapping of the long Definition column */
+  #tbl-sim-metrics table.table { width: 100% !important; }
+  #tbl-sim-metrics table.table td { white-space: normal; }
+</style>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key points
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>With small samples or rare outcomes, standard logistic regression can give unstable odds ratio estimates.</li>
+<li>Firth logistic regression can solve this problem.</li>
+<li>In <span class="math inline">\(\textsf{R}\)</span> it can be fit by using <code>glm(..., method = "brglmFit")</code> or via the <code>logistf</code> package.</li>
+<li>Both methods generally provide similar results. The <code>logistf</code> package also provides profile penalized-likelihood confidence intervals and hypothesis tests.</li>
+<li>Prespecify Firth regression in the SAP if few events or separation are anticipated (see <a href="#sec-sap">Code and SAP wording</a>).</li>
+</ul>
+</div>
+</div>
+<section id="problem" class="level1">
+<h1>Problem</h1>
+<section id="what-is-separation" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-separation">What is separation?</h2>
+<p>For a binary outcome, <em>separation</em> can occur when one treatment arm has no events and the other has both events and non-events.</p>
+<ul>
+<li><strong>Complete separation</strong>: the predictor perfectly separates the outcomes. All treated subjects have no event and all controls have the event (or vice versa).</li>
+<li><strong>Quasi-complete separation</strong>: the predictor separates the outcomes in one direction only. One cell of the 2x2 table is empty, but the other group has both outcomes.</li>
+</ul>
+<p>In both cases the predictor (here, treatment) splits the outcomes so cleanly that the data contain no information about how large the effect could be. Consequently, the likelihood keeps increasing as the log odds ratio moves towards <span class="math inline">\(\pm\infty\)</span>, so there is no finite maximum likelihood estimate (MLE).</p>
+<div class="cell" data-tbl-cap-location="bottom">
+<div id="tbl-separation-types" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-separation-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div style="display:flex; gap:2rem; justify-content:center; align-items:flex-start;">
+
+<table class="lightable-classic do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Complete separation</caption>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; empty-cells: hide; border-bottom: hidden;"></th>
+<th colspan="2" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="">
+Outcome
+</div></th>
+</tr>
+<tr class="even">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">No event</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Event</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Treatment</td>
+<td style="text-align: center; width: 6em;">10</td>
+<td style="text-align: center; width: 6em; background-color: #f4c7c3; font-weight: bold;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Control</td>
+<td style="text-align: center; width: 6em; background-color: #f4c7c3; font-weight: bold;">0</td>
+<td style="text-align: center; width: 6em;">10</td>
+</tr>
+</tbody>
+</table>
+
+
+<table class="lightable-classic do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Quasi-complete separation</caption>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; empty-cells: hide; border-bottom: hidden;"></th>
+<th colspan="2" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="">
+Outcome
+</div></th>
+</tr>
+<tr class="even">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">No event</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Event</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Treatment</td>
+<td style="text-align: center; width: 6em;">10</td>
+<td style="text-align: center; width: 6em; background-color: #f4c7c3; font-weight: bold;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Control</td>
+<td style="text-align: center; width: 6em;">6</td>
+<td style="text-align: center; width: 6em;">4</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-separation-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Small illustrative 2x2 tables: complete separation (left) and quasi-complete separation (right). Empty cells are highlighted.
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<p>Assume we have the following data from a trial.</p>
+<div class="cell" data-code-copy="true">
+<details class="code-fold">
+<summary>Show data example code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 50 subjects: x = treatment (1) vs control (0), y = outcome (1 = event)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">4</span>, <span class="dv">22</span>, <span class="dv">0</span>)),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">4</span>, <span class="dv">22</span>, <span class="dv">0</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> dat<span class="sc">$</span>x</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> dat<span class="sc">$</span>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-tbl-cap-location="bottom">
+<div id="tbl-example-2x2" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-example-2x2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="lightable-classic do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; empty-cells: hide; border-bottom: hidden;"></th>
+<th colspan="2" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="">
+Outcome
+</div></th>
+<th data-quarto-table-cell-role="th" style="text-align: center; empty-cells: hide; border-bottom: hidden;"></th>
+</tr>
+<tr class="even">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">No event</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Event</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Treatment</td>
+<td style="text-align: center; width: 6em;">22</td>
+<td style="text-align: center; width: 6em;">0</td>
+<td style="text-align: center; width: 6em;">22</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Control</td>
+<td style="text-align: center; width: 6em;">24</td>
+<td style="text-align: center; width: 6em;">4</td>
+<td style="text-align: center; width: 6em;">28</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; border-top: 1px solid;">Total</td>
+<td style="text-align: center; width: 6em; border-top: 1px solid;">46</td>
+<td style="text-align: center; width: 6em; border-top: 1px solid;">4</td>
+<td style="text-align: center; width: 6em; border-top: 1px solid;">50</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-example-2x2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: 2x2 contingency table for a binary treatment indicator <span class="math inline">\(X\)</span> and binary outcome <span class="math inline">\(Y\)</span> with sample size of 50.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>The treatment seems highly effective!</p>
+<p>The SAP specifies to conduct a logistic regression and estimate the odds ratio of treatment against control.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>m_glm <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x, <span class="at">family =</span> binomial, <span class="at">data =</span> dat)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m_glm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = y ~ x, family = binomial, data = dat)
+
+Coefficients:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)   -1.7918     0.5401  -3.318 0.000908 ***
+x            -18.7743  3780.1276  -0.005 0.996037    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 27.877  on 49  degrees of freedom
+Residual deviance: 22.967  on 48  degrees of freedom
+AIC: 26.967
+
+Number of Fisher Scoring iterations: 19</code></pre>
+</div>
+</div>
+<p>However, the data have quasi-complete separation. Note the large treatment effect estimate and its standard error. Depending on the model, <code>glm</code> may also warn that fitted probabilities are numerically 0 or 1. These are the typical signs of separation.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Checking for separation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>With a single binary predictor, an empty cell in the 2x2 table is easy to spot. With several covariates it is not. The <code>detectseparation</code> package can check the model formally.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("detectseparation")</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(detectseparation)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glm</span>(y <span class="sc">~</span> x, <span class="at">family =</span> binomial, <span class="at">data =</span> dat,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"detect_separation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Implementation: ROI | Solver: lpsolve 
+Separation: TRUE 
+Existence of maximum likelihood estimates
+(Intercept)           x 
+          0        -Inf 
+0: finite value, Inf: infinity, -Inf: -infinity</code></pre>
+</div>
+</div>
+<p>The output confirms that separation was detected (<code>Separation: TRUE</code>). For each coefficient it shows whether the MLE is finite (<code>0</code>) or infinite (<code>Inf</code> / <code>-Inf</code>). Here the intercept is finite, but the treatment coefficient is <code>-Inf</code>. In that case, the log odds ratio would keep decreasing without bound because the treatment arm has no events.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="theory" class="level1">
+<h1>Theory</h1>
+<p>In logistic regression, let <span class="math inline">\(Y_i \in \{0,1\}\)</span> with <span class="math display">\[
+\text{logit}(\Pr(Y_i = 1 \mid \mathbf{x}_i)) = \mathbf{x}_i^\top \boldsymbol{\beta},
+\]</span></p>
+<p>and let <span class="math inline">\(\ell(\boldsymbol{\beta})\)</span> denote the log-likelihood. The MLE <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> is consistent but carries a finite-sample bias of order <span class="math inline">\(O(n^{-1})\)</span>: <span class="math display">\[
+\text{Bias}(\boldsymbol{\beta}) = \mathrm{E}[\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}] = \frac{\mathbf{b}(\boldsymbol{\beta})}{n} + O(n^{-2}).
+\]</span></p>
+<p>For sparse or imbalanced data this bias inflates coefficient magnitudes away from zero. Under complete or quasi-complete separation the likelihood is monotone, the MLE does not exist, and the estimate diverges to <span class="math inline">\(\pm\infty\)</span>.</p>
+<p><span class="citation" data-cites="firth1993">Firth (<a href="#ref-firth1993" role="doc-biblioref">1993</a>)</span> proposed eliminating the <span class="math inline">\(O(n^{-1})\)</span> bias term by augmenting the log-likelihood with half the log-determinant of the Fisher information matrix <span class="math inline">\(\mathcal{I}(\boldsymbol{\beta})\)</span>: <span class="math display">\[
+\ell^*(\boldsymbol{\beta}) = \ell(\boldsymbol{\beta}) + \tfrac{1}{2}\log|\mathcal{I}(\boldsymbol{\beta})|.
+\]</span></p>
+<p>This is equivalent to placing Jeffreys’ invariant prior <span class="math inline">\(p(\boldsymbol{\beta}) \propto |\mathcal{I}(\boldsymbol{\beta})|^{1/2}\)</span> on the coefficients. Maximising <span class="math inline">\(\ell^*\)</span> gives the modified score equation <span class="math display">\[
+\mathbf{U}^*(\boldsymbol{\beta}) = \mathbf{U}(\boldsymbol{\beta}) + \mathcal{I}(\boldsymbol{\beta})\,\mathbf{b}(\boldsymbol{\beta}) = \mathbf{0},
+\]</span> which by construction subtracts the first-order bias, leaving residual bias of <span class="math inline">\(O(n^{-2})\)</span>.</p>
+<p>The penalty serves a second role under separation: as <span class="math inline">\(\|\boldsymbol{\beta}\| \to \infty\)</span> the term <span class="math inline">\(\tfrac{1}{2}\log|\mathcal{I}(\boldsymbol{\beta})|\)</span> decreases fast enough to make <span class="math inline">\(\ell^*\)</span> concave with a finite maximum, so penalized estimates always exist and are finite.</p>
+<p>The figure below illustrates this for the example data. For each value of the treatment log odds ratio, the intercept is set to its best value and the (penalized) log-likelihood is plotted relative to its maximum. The standard log-likelihood keeps rising as the log odds ratio decreases and never reaches a peak, so the MLE does not exist. The Firth penalty turns it into a curve with a clear maximum.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-likelihood" class="quarto-float quarto-figure quarto-figure-center anchored" data-cap-location="bottom">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-likelihood-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="firth_files/figure-html/fig-likelihood-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-likelihood-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Profile log-likelihood for the treatment log odds ratio in the example data. Maximum marked by the dashed line.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="solution" class="level1">
+<h1>Solution</h1>
+<p>Going back to the example, we see that this fixes the issue.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("brglm2")  # if not already installed</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brglm2)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>m_firth <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x, <span class="at">family =</span> binomial, <span class="at">data =</span> dat, <span class="at">method =</span> <span class="st">"brglmFit"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m_firth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = y ~ x, family = binomial, data = dat, method = "brglmFit")
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-0.5807  -0.5807  -0.2097  -0.2097   1.9304  
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)   
+(Intercept)   -1.695      0.522  -3.247  0.00117 **
+x             -2.112      1.552  -1.361  0.17365   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 27.920  on 49  degrees of freedom
+Residual deviance: 23.967  on 48  degrees of freedom
+AIC:  27.967
+
+Type of estimator: AS_mixed (mixed bias-reducing adjusted score equations)
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<p>The coefficients are on the log-odds scale. To report an odds ratio, exponentiate the estimate and its confidence interval. Note that <code>confint()</code> on a <code>brglmFit</code> object gives <strong>Wald</strong> intervals, which can be unreliable with so few events.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># odds ratios with Wald 95% CI</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(m_firth), <span class="fu">confint</span>(m_firth))[<span class="st">"x"</span>, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         OR       2.5 %      97.5 % 
+0.120987661 0.005772634 2.535760032 </code></pre>
+</div>
+</div>
+<p>For <strong>profile-likelihood</strong> confidence intervals, the <code>logistf</code> package can be used instead. It fits Firth regression and by default (<code>pl = TRUE</code>) computes profile penalized likelihood intervals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("logistf")  # if not already installed</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(logistf)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>m_logistf <span class="ot">&lt;-</span> <span class="fu">logistf</span>(y <span class="sc">~</span> x, <span class="at">data =</span> dat)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># odds ratio with profile-likelihood 95% CI</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(m_logistf), <span class="fu">confint</span>(m_logistf)))[<span class="st">"x"</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         OR   Lower 95%   Upper 95% 
+0.120987654 0.000893939 1.234081715 </code></pre>
+</div>
+</div>
+<p>The estimated odds ratio for treatment is finite and the interval is wide. It still includes 1, which reflects how little information 4 events in 50 subjects carry. The following table summarizes these methods and their estimates.</p>
+<div class="cell" data-tbl-cap-location="bottom">
+<div id="tbl-compare" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-compare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="lightable-classic do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Method</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Package</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">log OR</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">SE</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">OR</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">95% CI</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">CI type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">MLE</td>
+<td style="text-align: left;">base (<code>glm</code>)</td>
+<td style="text-align: center;">-18.8</td>
+<td style="text-align: center;">3.78e+03</td>
+<td style="text-align: center;">7.02e-09</td>
+<td style="text-align: center;">( 0, Inf)</td>
+<td style="text-align: center;">Wald</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Firth</td>
+<td style="text-align: left;"><code>brglm2</code></td>
+<td style="text-align: center;">-2.11</td>
+<td style="text-align: center;">1.55</td>
+<td style="text-align: center;">0.121</td>
+<td style="text-align: center;">(0.00577, 2.54)</td>
+<td style="text-align: center;">Wald</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Firth</td>
+<td style="text-align: left;"><code>logistf</code></td>
+<td style="text-align: center;">-2.11</td>
+<td style="text-align: center;">1.52</td>
+<td style="text-align: center;">0.121</td>
+<td style="text-align: center;">(0.000894, 1.23)</td>
+<td style="text-align: center;">Profile</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-compare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Treatment effect from standard logistic regression (MLE) and Firth regression.
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="simulation" class="level1">
+<h1>Simulation</h1>
+<section id="setup-mle-vs-firth-regression" class="level2">
+<h2 class="anchored" data-anchor-id="setup-mle-vs-firth-regression">Setup: MLE vs Firth regression</h2>
+<p>We compared standard logistic regression (MLE) with Firth regression (from <span class="math inline">\(\textsf{R}\)</span> packages <code>brglm2</code>, <code>logistf</code>) in small-sample settings. The aim was to see (i) how often the MLE breaks down because of separation and (ii) whether Firth’s estimates are less biased and what they cost in precision.</p>
+<p>For each scenario, <span class="math inline">\(N_\text{sim} = 2{,}000\)</span> datasets are generated under the logistic regression model</p>
+<p><span class="math display">\[
+\text{logit}\, P(Y_i = 1 \mid X_i) = \beta_0 + \beta X_i, \qquad X_i \sim \text{Bernoulli}(0.5),
+\]</span></p>
+<p>with true log-odds ratio <span class="math inline">\(\beta = \log(1/3)\)</span> (OR = 1/3, moderate protective effect). The intercept <span class="math inline">\(\beta_0\)</span> is chosen to match a target marginal prevalence <span class="math inline">\(P(Y = 1)\)</span>. For each dataset, three estimators are fitted: the standard MLE (<code>glm</code>), Firth regression via <code>brglm2</code> and Firth regression via <code>logistf</code>.</p>
+<p>For each simulated dataset, we recorded whether quasi-complete separation or near separation occurred. We then evaluated the performance of the three estimators by recording (i) whether the estimation procedure converged, (ii) the bias of the estimates, and (iii) their standard errors (SEs). See <a href="#tbl-sim-metrics" class="quarto-xref">Table&nbsp;4</a>.</p>
+<div class="cell" data-tbl-colwidths="[20,80]" data-tbl-cap-location="bottom">
+<div id="tbl-sim-metrics" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom" data-tbl-colwidths="[20,80]">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-sim-metrics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 80%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Quasi-complete separation</strong></td>
+<td style="text-align: left;">Exactly one level of <span class="math inline">\(X\)</span> has a constant outcome (all 0 or all 1).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Near separation</strong></td>
+<td style="text-align: left;">At least one cell of the <span class="math inline">\(2 \times 2\)</span> table contains fewer than 5 subjects.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>MLE non-convergence</strong></td>
+<td style="text-align: left;">The MLE coefficient or its standard error exceeds 10 in absolute value or the model fails entirely.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Firth (<code>brglm2</code>) non-convergence</strong></td>
+<td style="text-align: left;">Same criterion applied to the <code>brglm2</code> Firth estimator.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Firth (<code>logistf</code>) non-convergence</strong></td>
+<td style="text-align: left;">Same criterion applied to the <code>logistf</code> Firth estimator.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Bias</strong></td>
+<td style="text-align: left;">Estimated <span class="math inline">\(\hat\beta\)</span> minus the true <span class="math inline">\(\beta\)</span>, computed only when the respective model converges.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>SE</strong></td>
+<td style="text-align: left;">Standard error of <span class="math inline">\(\hat\beta\)</span>, computed only when the respective model converges.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-sim-metrics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Metrics recorded for each simulated dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>We vary the main drivers of separation, sample size and prevalence.</p>
+<ol type="1">
+<li><strong>Varying sample size</strong> — <span class="math inline">\(n \in \{10, 20, 30, 50, 100, 200, 300, 500\}\)</span> with the intercept fixed to give a marginal prevalence of 5%.</li>
+<li><strong>Varying prevalence</strong> — <span class="math inline">\(n = 100\)</span> fixed, with marginal prevalence varying across <span class="math inline">\(\{1\%, 2\%, 3\%, 5\%, 10\%, 20\%, 30\%, 50\%\}\)</span>.</li>
+</ol>
+</section>
+<section id="varying-sample-size" class="level2">
+<h2 class="anchored" data-anchor-id="varying-sample-size">Varying sample size</h2>
+<p><a href="#fig-sim1-separation" class="quarto-xref">Figure&nbsp;2</a> shows how often separation and MLE non-convergence occur, and <a href="#fig-sim1-bias" class="quarto-xref">Figure&nbsp;3</a> and <a href="#fig-sim1-se" class="quarto-xref">Figure&nbsp;4</a> compare bias and standard errors of the three estimators.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-sim1-separation" class="quarto-float quarto-figure quarto-figure-center anchored" data-cap-location="bottom">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sim1-separation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="firth_files/figure-html/fig-sim1-separation-1.png" class="img-fluid figure-img" width="576">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim1-separation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Separation and non-convergence rates by sample size. Marginal prevalence fixed at 5%. The MLE non-convergence and quasi-complete separation lines overlap completely.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sim1-bias" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sim1-bias-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="firth_files/figure-html/fig-sim1-bias-1.png" class="img-fluid figure-img" width="576">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim1-bias-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Bias by sample size for the logistic regression (MLE vs Firth with <code>brglm2</code> and <code>logistf</code>). Marginal prevalence fixed at 5%.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sim1-se" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sim1-se-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="firth_files/figure-html/fig-sim1-se-1.png" class="img-fluid figure-img" width="576">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim1-se-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Standard errors by sample size for the logistic regression (MLE vs Firth with <code>brglm2</code> and <code>logistf</code>). Marginal prevalence fixed at 5%.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="varying-prevalence" class="level2">
+<h2 class="anchored" data-anchor-id="varying-prevalence">Varying prevalence</h2>
+<p><a href="#fig-sim2-separation" class="quarto-xref">Figure&nbsp;5</a> shows how often separation and MLE non-convergence occur, and <a href="#fig-sim2-bias" class="quarto-xref">Figure&nbsp;6</a> and <a href="#fig-sim2-se" class="quarto-xref">Figure&nbsp;7</a> compare bias and standard errors of the three estimators.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sim2-separation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sim2-separation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="firth_files/figure-html/fig-sim2-separation-1.png" class="img-fluid figure-img" width="576">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim2-separation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Separation and non-convergence rates by prevalence. Sample size fixed at 100. The MLE non-convergence and quasi-complete separation lines overlap completely.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sim2-bias" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sim2-bias-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="firth_files/figure-html/fig-sim2-bias-1.png" class="img-fluid figure-img" width="576">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim2-bias-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Bias by prevalence for the logistic regression (MLE vs Firth with <code>brglm2</code> and <code>logistf</code>). Sample size fixed at 100.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sim2-se" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sim2-se-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="firth_files/figure-html/fig-sim2-se-1.png" class="img-fluid figure-img" width="576">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim2-se-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Standard errors by prevalence for the logistic regression (MLE vs Firth with <code>brglm2</code> and <code>logistf</code>). Sample size fixed at 100.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<ul>
+<li><strong>The MLE failed often.</strong> At a prevalence of 5%, quasi-complete separation (and thus MLE failure) occurred in 56% of datasets with <span class="math inline">\(n = 50\)</span> and 28% with <span class="math inline">\(n = 100\)</span> (<a href="#fig-sim1-separation" class="quarto-xref">Figure&nbsp;2</a>). With <span class="math inline">\(n = 100\)</span>, the rate of non-convergence fell from 64% at 2% prevalence to about 6% at 10% (<a href="#fig-sim2-separation" class="quarto-xref">Figure&nbsp;5</a>). Both Firth implementations converged in practically all datasets.</li>
+<li><strong>Firth reduces bias.</strong> Among datasets where the MLE fit converged, bias in the log odds ratio was 0.28 for MLE and 0.08 for Firth at <span class="math inline">\(n = 100\)</span> and 5% prevalence (<a href="#fig-sim1-bias" class="quarto-xref">Figure&nbsp;3</a>, <a href="#fig-sim2-bias" class="quarto-xref">Figure&nbsp;6</a>). Firth’s standard errors were somewhat larger in the smallest samples, where MLE standard errors were available only for converged fits (<a href="#fig-sim1-se" class="quarto-xref">Figure&nbsp;4</a>, <a href="#fig-sim2-se" class="quarto-xref">Figure&nbsp;7</a>).</li>
+<li><strong>No penalty in larger samples.</strong> Once separation becomes rare (roughly <span class="math inline">\(n \geq 200\)</span> at 5% prevalence, or prevalence <span class="math inline">\(\geq 10\%\)</span> at <span class="math inline">\(n = 100\)</span>), MLE and Firth are essentially identical (<a href="#fig-sim1-bias" class="quarto-xref">Figure&nbsp;3</a>, <a href="#fig-sim2-bias" class="quarto-xref">Figure&nbsp;6</a>).</li>
+<li><strong>Firth estimates agreed across packages</strong> <code>brglm2</code> and <code>logistf</code> gave similar estimates in the simulation scenarios.</li>
+</ul>
+</section>
+</section>
+<section id="moving-forward" class="level1">
+<h1>Moving forward</h1>
+<section id="recommendation" class="level2">
+<h2 class="anchored" data-anchor-id="recommendation">Recommendation</h2>
+<p>Prespecify Firth logistic regression in the SAP when separation is plausible, for example for small sample sizes or a rare outcome. Additionally, in our simulations it performed no worse than the MLE when events were not rare.</p>
+</section>
+<section id="sec-sap" class="level2">
+<h2 class="anchored" data-anchor-id="sec-sap">Code and SAP wording</h2>
+<p><strong>Template code</strong> (replace <code>outcome</code>, <code>treatment</code> and covariates with your variables).</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(logistf)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Firth regression</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">logistf</span>(outcome <span class="sc">~</span> treatment <span class="sc">+</span> covariate1 <span class="sc">+</span> covariate2, <span class="at">data =</span> dat)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Odds ratios with profile-likelihood 95% CI</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(fit), <span class="fu">confint</span>(fit)))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative: brglm2 (note: confint() gives Wald intervals)</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># library(brglm2)</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># fit &lt;- glm(outcome ~ ., family = binomial, data = dat, method = "brglmFit")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Suggested SAP wording</strong> (adapt as needed):</p>
+<blockquote class="blockquote">
+<p>The treatment effect will be estimated as an odds ratio using logistic regression with Firth’s bias-reduction (R package <code>logistf</code>), because few events are expected with 95% CIs based on the profile penalized likelihood.</p>
+</blockquote>
+<p><strong>Points to consider</strong></p>
+<ul>
+<li><strong>Pre-specify rather than switch.</strong> Choosing the method <em>because</em> the standard model failed makes the analysis data-dependent. If rare events or separation are plausible, specify Firth regression as the primary analysis.</li>
+<li><strong>Predicted probabilities.</strong> Firth regression shrinks the intercept towards 0.5, so predicted risks can be biased upwards when events are rare. If absolute risks matter, consider the FLIC or FLAC variants in the <code>logistf</code> package.</li>
+</ul>
+</section>
+<section id="software" class="level2">
+<h2 class="anchored" data-anchor-id="software">Software</h2>
+<ul>
+<li>The <code>brglm2</code> package <span class="citation" data-cites="kosmidis2021">(<a href="#ref-kosmidis2021" role="doc-biblioref">Kosmidis and Firth 2021</a>)</span> implements bias-reduction for the full family of generalized linear models, not only logistic regression. The method is invoked by passing <code>method = "brglmFit"</code> directly inside the standard <code>glm()</code> call, requiring no change to the model formula or the rest of the analysis workflow.</li>
+<li>Alternative implementations include the <code>logistf</code> package <span class="citation" data-cites="heinze2024">(<a href="#ref-heinze2024" role="doc-biblioref">Heinze, Ploner, and Jiricka 2024</a>)</span>, which also provides profile likelihood confidence intervals and tests (the default).</li>
+<li>For time-to-event analysis, the same problem can occur. The <code>coxphf</code> package <span class="citation" data-cites="heinze2023coxphf">(<a href="#ref-heinze2023coxphf" role="doc-biblioref">Heinze et al. 2023</a>)</span> fits Cox regression with Firth’s penalization of the partial likelihood.</li>
+</ul>
+<p>Variations of the penalty exist. Specifically, there is also an extended Firth approach to a general mean-bias-reduction framework <span class="citation" data-cites="kosmidis2009">(<a href="#ref-kosmidis2009" role="doc-biblioref">Kosmidis and Firth 2009</a>)</span>.</p>
+</section>
+<section id="session-info" class="level2">
+<h2 class="anchored" data-anchor-id="session-info">Session info</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.5.2 (2025-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22631)
+
+Matrix products: default
+  LAPACK version 3.12.1
+
+locale:
+[1] LC_COLLATE=English_Australia.utf8  LC_CTYPE=English_Australia.utf8   
+[3] LC_MONETARY=English_Australia.utf8 LC_NUMERIC=C                      
+[5] LC_TIME=English_Australia.utf8    
+
+time zone: Europe/Zurich
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] detectseparation_0.4.0 kableExtra_1.4.0       knitr_1.51            
+[4] logistf_1.26.1         brglm2_1.0.1           data.table_1.18.2.1   
+[7] ggplot2_4.0.1         
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1         viridisLite_0.4.3        dplyr_1.2.1             
+ [4] farver_2.1.2             S7_0.2.1                 fastmap_1.2.0           
+ [7] digest_0.6.39            rpart_4.1.24             lifecycle_1.0.5         
+[10] survival_3.8-3           statmod_1.5.1            magrittr_2.0.4          
+[13] compiler_4.5.2           rlang_1.1.7              tools_4.5.2             
+[16] yaml_2.3.12              labeling_0.4.3           htmlwidgets_1.6.4       
+[19] xml2_1.5.2               RColorBrewer_1.1-3       enrichwith_0.4.0        
+[22] registry_0.5-1           nleqslv_3.3.7            withr_3.0.2             
+[25] purrr_1.2.1              numDeriv_2016.8-1.1      nnet_7.3-20             
+[28] grid_4.5.2               jomo_2.7-6               mice_3.19.0             
+[31] scales_1.4.0             iterators_1.0.14         MASS_7.3-65             
+[34] cli_3.6.5                rmarkdown_2.30           reformulas_0.4.3.1      
+[37] generics_0.1.4           otel_0.2.0               rstudioapi_0.18.0       
+[40] minqa_1.2.8              stringr_1.6.0            operator.tools_1.6.3.1  
+[43] splines_4.5.2            vctrs_0.7.1              boot_1.3-32             
+[46] glmnet_4.1-10            Matrix_1.7-4             jsonlite_2.0.0          
+[49] slam_0.1-56              mitml_0.4-5              ROI.plugin.lpsolve_1.0-2
+[52] systemfonts_1.3.1        foreach_1.5.2            tidyr_1.3.2             
+[55] glue_1.8.0               ROI_1.0-2                nloptr_2.2.1            
+[58] pan_2.0                  codetools_0.2-20         stringi_1.8.7           
+[61] shape_1.4.6.1            gtable_0.3.6             lme4_1.1-38             
+[64] tibble_3.3.1             pillar_1.11.1            htmltools_0.5.9         
+[67] R6_2.6.1                 textshaping_1.0.4        Rdpack_2.6.5            
+[70] formula.tools_1.7.1      lpSolveAPI_5.5.2.0-17.15 evaluate_1.0.5          
+[73] lattice_0.22-7           rbibutils_2.4.1          backports_1.5.0         
+[76] broom_1.0.12             Rcpp_1.1.1               svglite_2.2.2           
+[79] nlme_3.1-168             checkmate_2.3.4          mgcv_1.9-3              
+[82] xfun_0.56                pkgconfig_2.0.3         </code></pre>
+</div>
+</div>
+
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-firth1993" class="csl-entry" role="listitem">
+Firth, David. 1993. <span>“Bias Reduction of Maximum Likelihood Estimates.”</span> <em>Biometrika</em> 80 (1): 27–38. <a href="https://doi.org/10.1093/biomet/80.1.27">https://doi.org/10.1093/biomet/80.1.27</a>.
+</div>
+<div id="ref-heinze2024" class="csl-entry" role="listitem">
+Heinze, Georg, Meinhard Ploner, and Lena Jiricka. 2024. <em><code>logistf</code>: Firth’s Bias-Reduced Logistic Regression</em>. <a href="https://CRAN.R-project.org/package=logistf">https://CRAN.R-project.org/package=logistf</a>.
+</div>
+<div id="ref-heinze2023coxphf" class="csl-entry" role="listitem">
+Heinze, Georg, Meinhard Ploner, Lena Jiricka, and Gregor Steiner. 2023. <em><code>coxphf</code>: Cox Regression with Firth’s Penalized Likelihood</em>. <a href="https://doi.org/10.32614/CRAN.package.coxphf">https://doi.org/10.32614/CRAN.package.coxphf</a>.
+</div>
+<div id="ref-kosmidis2009" class="csl-entry" role="listitem">
+Kosmidis, Ioannis, and David Firth. 2009. <span>“Bias Reduction in Exponential Family Nonlinear Models.”</span> <em>Biometrika</em> 96 (4): 793–804. <a href="https://doi.org/10.1093/biomet/asp055">https://doi.org/10.1093/biomet/asp055</a>.
+</div>
+<div id="ref-kosmidis2021" class="csl-entry" role="listitem">
+———. 2021. <span>“Jeffreys-Prior Penalty, Finiteness and Shrinkage in Binomial-Response Generalized Linear Models.”</span> <em>Biometrika</em> 108 (1): 71–82. <a href="https://doi.org/10.1093/biomet/asaa052">https://doi.org/10.1093/biomet/asaa052</a>.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>This is a conditional bias, which favours the MLE because its worst (separated) datasets are excluded.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For <code>glm</code> (MLE) and <code>brglm2</code> this is the usual model-based standard error; for <code>logistf</code> it is taken from the penalized likelihood fit.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CC-BY SCTO Statistics and Methodology</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

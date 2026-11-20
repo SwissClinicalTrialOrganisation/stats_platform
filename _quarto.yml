@@ -46,6 +46,7 @@ website:
           - MultipleEndpoints.qmd
           - AdjustedSurvivalCurves.qmd
           - safetyreporting.qmd
+          - firth.qmd
           - excel_db.qmd
           - text: Other tutorials
             href: tutorials.qmd#others

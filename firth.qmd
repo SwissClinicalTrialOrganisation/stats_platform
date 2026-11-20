@@ -1,0 +1,540 @@
+---
+title: "Firth logistic regression"
+description: ""
+bibliography: references.bib
+---
+
+```{=html}
+<style type="text/css">
+  figure.quarto-float-tbl figcaption.quarto-float-caption-bottom {
+    text-align:left
+  }
+  /* no gray striping/hover shading; tables only as wide as their content */
+  table.table {
+    --bs-table-striped-bg: transparent;
+    --bs-table-hover-bg: transparent;
+    --bs-table-bg: transparent;
+    --bs-table-accent-bg: transparent;
+    width: auto !important;
+  }
+  table.table > :not(caption) > * > * { background-color: transparent; box-shadow: none; }
+  table.table { margin-left: auto; margin-right: auto; }
+  table.table th, table.table td { white-space: nowrap; }
+  /* metrics table: allow wrapping of the long Definition column */
+  #tbl-sim-metrics table.table { width: 100% !important; }
+  #tbl-sim-metrics table.table td { white-space: normal; }
+</style>
+```
+
+::: {.callout-note}
+## Key points
+
+- With small samples or rare outcomes, standard logistic regression can give unstable odds ratio estimates.
+- Firth logistic regression can solve this problem.
+- In $\textsf{R}$ it can be fit by using `glm(..., method = "brglmFit")` or via the `logistf` package.
+- Both methods generally provide similar results. The `logistf` package also provides profile penalized-likelihood confidence intervals and hypothesis tests.
+- Prespecify Firth regression in the SAP if few events or separation are anticipated (see [Code and SAP wording](#sec-sap)).
+:::
+
+# Problem
+
+```{r}
+#| label: load-plots
+#| echo: false
+#| message: false
+#| cache: false
+#| warning: false
+
+source("firth/firth_plots.R")
+
+pkgs <- c("ggplot2", "data.table", "brglm2", "logistf", "knitr", "kableExtra")
+
+req <- sapply(pkgs, require, char = TRUE)
+if (!all(req)){
+  sapply(pkgs[!req], install.packages)
+  req[!req] <- sapply(pkgs[!req], require, char = TRUE)
+}
+if (!all(req))
+  stop("cannot load dependencies")
+```
+
+
+## What is separation?
+
+For a binary outcome, *separation* can occur when one treatment arm has no events and the other has both events and non-events.
+
+- **Complete separation**: the predictor perfectly separates the outcomes. All treated subjects have no event and all controls have the event (or vice versa).
+- **Quasi-complete separation**: the predictor separates the outcomes in one direction only. One cell of the 2x2 table is empty, but the other group has both outcomes.
+
+In both cases the predictor (here, treatment) splits the outcomes so cleanly that the data contain no information about how large the effect could be. Consequently, the likelihood keeps increasing as the log odds ratio moves towards $\pm\infty$, so there is no finite maximum likelihood estimate (MLE).
+
+```{r}
+#| label: tbl-separation-types
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: "Small illustrative 2x2 tables: complete separation (left) and quasi-complete separation (right). Empty cells are highlighted."
+#| tbl-cap-location: bottom
+
+sep_tbl <- function(counts, title) {
+  d <- data.frame(
+    " " = c("Treatment", "Control"),
+    "No event" = counts[c(1, 3)],
+    "Event" = counts[c(2, 4)],
+    check.names = FALSE
+  )
+  # empty cells are what cause separation: highlight the whole cell
+  k <- kable(d, format = "html", booktabs = TRUE, align = "lcc",
+             caption = title) |>
+    add_header_above(c(" " = 1, "Outcome" = 2), line = FALSE) |>
+    kable_classic(full_width = FALSE) |>
+    column_spec(2:3, width = "6em")
+  gsub('(<td style="[^"]*)">\\s*0\\s*</td>',
+       '\\1 background-color: #f4c7c3; font-weight: bold;">0</td>', k)
+}
+
+# counts in the order: treatment no-event, treatment event, control no-event, control event
+t_complete <- sep_tbl(c(10, 0, 0, 10), "Complete separation")
+t_quasi    <- sep_tbl(c(10, 0, 6, 4),  "Quasi-complete separation")
+
+htmltools::browsable(htmltools::div(
+  style = "display:flex; gap:2rem; justify-content:center; align-items:flex-start;",
+  htmltools::HTML(as.character(t_complete)),
+  htmltools::HTML(as.character(t_quasi))
+))
+```
+
+## Example
+
+Assume we have the following data from a trial.
+```{r}
+#| label: data-example
+#| echo: true
+#| message: false
+#| warning: false
+#| code-fold: true
+#| code-summary: "Show data example code"
+#| code-copy: true
+
+# 50 subjects: x = treatment (1) vs control (0), y = outcome (1 = event)
+dat <- data.frame(
+  x = rep(c(0, 0, 1, 1), times = c(24, 4, 22, 0)),
+  y = rep(c(0, 1, 0, 1), times = c(24, 4, 22, 0))
+)
+
+x <- dat$x
+y <- dat$y
+```
+
+```{r}
+#| label: tbl-example-2x2
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: "2x2 contingency table for a binary treatment indicator $X$ and binary outcome $Y$ with sample size of 50."
+#| tbl-cap-location: bottom
+
+tbl <- table(x = dat$x, y = dat$y)
+
+# df_tbl kept as a plain data frame for inline references later
+df_tbl <- as.data.frame.matrix(addmargins(tbl))
+
+tbl_display <- as.data.frame.matrix(addmargins(tbl))[c("1", "0", "Sum"), ]
+colnames(tbl_display) <- c("No event", "Event", "Total")
+tbl_display <- cbind(
+  Group = c("Treatment", "Control", "Total"),
+  tbl_display
+)
+
+kable(tbl_display, format = "html", booktabs = TRUE, row.names = FALSE,
+      col.names = c(" ", "No event", "Event", "Total"), align = "lccc") |>
+  add_header_above(c(" " = 1, "Outcome" = 2, " " = 1), line = FALSE) |>
+  kable_classic(full_width = FALSE, font_size = 18) |>
+  column_spec(2:4, width = "6em") |>
+  row_spec(3, extra_css = "border-top: 1px solid;")
+```
+
+The treatment seems highly effective!
+
+The SAP specifies to conduct a logistic regression and estimate the odds ratio of treatment against control.
+```{r}
+#| label: out-mle
+#| echo: true
+#| message: true
+#| warning: true
+
+m_glm <- glm(y ~ x, family = binomial, data = dat)
+summary(m_glm)
+```
+However, the data have quasi-complete separation. Note the large treatment effect estimate and its standard error. Depending on the model, `glm` may also warn that fitted probabilities are numerically 0 or 1. These are the typical signs of separation.
+
+::: {.callout-tip}
+## Checking for separation
+
+With a single binary predictor, an empty cell in the 2x2 table is easy to spot. With several covariates it is not. The `detectseparation` package can check the model formally.
+
+```{r}
+#| label: detect-separation
+#| echo: true
+#| message: false
+#| warning: false
+
+# install.packages("detectseparation")
+library(detectseparation)
+
+glm(y ~ x, family = binomial, data = dat,
+    method = "detect_separation")
+```
+
+The output confirms that separation was detected (`Separation: TRUE`). For each coefficient it shows whether the MLE is finite (`0`) or infinite (`Inf` / `-Inf`). Here the intercept is finite, but the treatment coefficient is `-Inf`. In that case, the log odds ratio would keep decreasing without bound because the treatment arm has no events.
+:::
+
+# Theory
+
+In logistic regression, let $Y_i \in \{0,1\}$ with
+$$
+\text{logit}(\Pr(Y_i = 1 \mid \mathbf{x}_i)) = \mathbf{x}_i^\top \boldsymbol{\beta},
+$$
+
+and let $\ell(\boldsymbol{\beta})$ denote the log-likelihood. The MLE $\hat{\boldsymbol{\beta}}$ is consistent but carries a finite-sample bias of order $O(n^{-1})$:
+$$
+\text{Bias}(\boldsymbol{\beta}) = \mathrm{E}[\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}] = \frac{\mathbf{b}(\boldsymbol{\beta})}{n} + O(n^{-2}).
+$$
+
+For sparse or imbalanced data this bias inflates coefficient magnitudes away from zero. Under complete or quasi-complete separation the likelihood is monotone, the MLE does not exist, and the estimate diverges to $\pm\infty$.
+
+@firth1993 proposed eliminating the $O(n^{-1})$ bias term by augmenting the log-likelihood with half the log-determinant of the Fisher information matrix $\mathcal{I}(\boldsymbol{\beta})$:
+$$
+\ell^*(\boldsymbol{\beta}) = \ell(\boldsymbol{\beta}) + \tfrac{1}{2}\log|\mathcal{I}(\boldsymbol{\beta})|.
+$$
+
+This is equivalent to placing Jeffreys' invariant prior $p(\boldsymbol{\beta}) \propto |\mathcal{I}(\boldsymbol{\beta})|^{1/2}$ on the coefficients. Maximising $\ell^*$ gives the modified score equation
+$$
+\mathbf{U}^*(\boldsymbol{\beta}) = \mathbf{U}(\boldsymbol{\beta}) + \mathcal{I}(\boldsymbol{\beta})\,\mathbf{b}(\boldsymbol{\beta}) = \mathbf{0},
+$$
+which by construction subtracts the first-order bias, leaving residual bias of $O(n^{-2})$.
+
+The penalty serves a second role under separation: as $\|\boldsymbol{\beta}\| \to \infty$ the term $\tfrac{1}{2}\log|\mathcal{I}(\boldsymbol{\beta})|$ decreases fast enough to make $\ell^*$ concave with a finite maximum, so penalized estimates always exist and are finite.
+
+The figure below illustrates this for the example data. For each value of the treatment log odds ratio, the intercept is set to its best value and the (penalized) log-likelihood is plotted relative to its maximum. The standard log-likelihood keeps rising as the log odds ratio decreases and never reaches a peak, so the MLE does not exist. The Firth penalty turns it into a curve with a clear maximum.
+
+```{r}
+#| label: fig-likelihood
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 8
+#| fig-height: 3.5
+#| fig-cap: "Profile log-likelihood for the treatment log odds ratio in the example data. Maximum marked by the dashed line."
+#| fig-cap-location: "bottom"
+
+X_mat <- cbind(1, dat$x)
+
+ll_fun <- function(b0, b1, pen) {
+  p <- plogis(b0 + b1 * dat$x)
+  l <- sum(dat$y * log(p) + (1 - dat$y) * log(1 - p))
+  if (pen) {
+    W <- p * (1 - p)
+    l <- l + 0.5 * log(det(crossprod(X_mat, X_mat * W)))
+  }
+  l
+}
+prof_fun <- function(b1, pen) {
+  optimize(function(b0) ll_fun(b0, b1, pen), c(-15, 15), maximum = TRUE)$objective
+}
+
+grid <- seq(-12, 3, by = 0.1)
+lik_dat <- rbindlist(list(
+  data.table(beta = grid, value = sapply(grid, prof_fun, pen = FALSE),
+             method = "Standard log-likelihood"),
+  data.table(beta = grid, value = sapply(grid, prof_fun, pen = TRUE),
+             method = "Firth penalized log-likelihood")
+))
+lik_dat[, value := value - max(value), by = method]
+lik_dat[, method := factor(method, levels = unique(method))]
+
+ggplot(lik_dat, aes(beta, value)) +
+  geom_line(linewidth = 0.8) +
+  geom_vline(
+    data = data.frame(
+      method = factor("Firth penalized log-likelihood", levels = levels(lik_dat$method)),
+      beta = lik_dat[method == "Firth penalized log-likelihood"][which.max(value), beta]
+    ),
+    aes(xintercept = beta), linetype = "dashed"
+  ) +
+  facet_wrap(~method, scales = "free_y") +
+  labs(x = "Treatment log odds ratio", y = "Log-likelihood (relative to maximum)") +
+  theme_bw()
+```
+
+
+# Solution
+
+Going back to the example, we see that this fixes the issue.
+```{r}
+#| label: out-firth
+#| echo: true
+#| message: false
+#| warning: false
+
+# install.packages("brglm2")  # if not already installed
+library(brglm2)
+
+m_firth <- glm(y ~ x, family = binomial, data = dat, method = "brglmFit")
+summary(m_firth)
+```
+
+The coefficients are on the log-odds scale. To report an odds ratio, exponentiate the estimate and its confidence interval. Note that `confint()` on a `brglmFit` object gives **Wald** intervals, which can be unreliable with so few events.
+
+```{r}
+#| label: out-firth-or
+#| echo: true
+#| message: false
+#| warning: false
+
+# odds ratios with Wald 95% CI
+exp(cbind(OR = coef(m_firth), confint(m_firth))["x", ])
+```
+
+For **profile-likelihood** confidence intervals, the `logistf` package can be used instead. It fits Firth regression and by default (`pl = TRUE`) computes profile penalized likelihood intervals.
+
+```{r}
+#| label: out-logistf
+#| echo: true
+#| message: false
+#| warning: false
+
+# install.packages("logistf")  # if not already installed
+library(logistf)
+
+m_logistf <- logistf(y ~ x, data = dat)
+
+# odds ratio with profile-likelihood 95% CI
+exp(cbind(OR = coef(m_logistf), confint(m_logistf)))["x", ]
+```
+
+
+The estimated odds ratio for treatment is finite and the interval is wide. It still includes 1, which reflects how little information 4 events in 50 subjects carry. The following table summarizes these methods and their estimates.
+
+
+```{r}
+#| label: tbl-compare
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: "Treatment effect from standard logistic regression (MLE) and Firth regression."
+#| tbl-cap-location: bottom
+
+b_mle <- coef(summary(m_glm))["x", ]
+b_brg <- coef(summary(m_firth))["x", ]
+b_lgf <- unname(coef(m_logistf)["x"])
+se_lgf <- unname(sqrt(diag(vcov(m_logistf)))["x"])
+ci_lgf <- unname(confint(m_logistf)["x", ])  # profile likelihood (pl = TRUE)
+fmt <- function(x) formatC(x, digits = 3, format = "g")
+ci_txt <- function(lo, hi) paste0("(", fmt(exp(lo)), ", ", fmt(exp(hi)), ")")
+wald <- function(est, se) ci_txt(est - 1.96 * se, est + 1.96 * se)
+
+cmp <- data.frame(
+  Method = c("MLE", "Firth", "Firth"),
+  Package = c("base (<code>glm</code>)", "<code>brglm2</code>", "<code>logistf</code>"),
+  `log OR` = fmt(c(b_mle["Estimate"], b_brg["Estimate"], b_lgf)),
+  SE = fmt(c(b_mle["Std. Error"], b_brg["Std. Error"], se_lgf)),
+  OR = fmt(exp(c(b_mle["Estimate"], b_brg["Estimate"], b_lgf))),
+  `95% CI` = c(
+    wald(b_mle["Estimate"], b_mle["Std. Error"]),
+    wald(b_brg["Estimate"], b_brg["Std. Error"]),
+    ci_txt(ci_lgf[1], ci_lgf[2])
+  ),
+  `CI type` = c("Wald", "Wald", "Profile"),
+  check.names = FALSE
+)
+
+kable(cmp, format = "html", booktabs = TRUE, align = "llccccc", row.names = FALSE, escape = FALSE) |>
+  kable_classic(full_width = FALSE)
+```
+
+# Simulation
+## Setup: MLE vs Firth regression
+
+We compared standard logistic regression (MLE) with Firth regression (from $\textsf{R}$ packages `brglm2`, `logistf`) in small-sample settings. The aim was to see (i) how often the MLE breaks down because of separation and (ii) whether Firth's estimates are less biased and what they cost in precision.
+
+For each scenario, $N_\text{sim} = 2{,}000$ datasets are generated under the logistic regression model
+
+$$
+\text{logit}\, P(Y_i = 1 \mid X_i) = \beta_0 + \beta X_i, \qquad X_i \sim \text{Bernoulli}(0.5),
+$$
+
+with true log-odds ratio $\beta = \log(1/3)$ (OR = 1/3, moderate protective effect). The intercept $\beta_0$ is chosen to match a target marginal prevalence $P(Y = 1)$. For each dataset, three estimators are fitted: the standard MLE (`glm`), Firth regression via `brglm2` and Firth regression via `logistf`. 
+
+For each simulated dataset, we recorded whether quasi-complete separation or near separation occurred. We then evaluated the performance of the three estimators by recording (i) whether the estimation procedure converged, (ii) the bias of the estimates, and (iii) their standard errors (SEs). See @tbl-sim-metrics.
+
+```{r}
+#| label: tbl-sim-metrics
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: "Metrics recorded for each simulated dataset."
+#| tbl-cap-location: bottom
+#| tbl-colwidths: [20, 80]
+
+metrics <-data.frame(
+  Metric = c("Quasi-complete separation", "Near separation",
+             "MLE non-convergence", "Firth (brglm2) non-convergence",
+             "Firth (logistf) non-convergence", "Bias", "SE"),
+  Definition = c(
+    "Exactly one level of $X$ has a constant outcome (all 0 or all 1).",
+    "At least one cell of the $2 \\times 2$ table contains fewer than 5 subjects.",
+    "The MLE coefficient or its standard error exceeds 10 in absolute value or the model fails entirely.",
+    "Same criterion applied to the `brglm2` Firth estimator.",
+    "Same criterion applied to the `logistf` Firth estimator.",
+    "Estimated $\\hat\\beta$ minus the true $\\beta$, computed only when the respective model converges.[^bias-note]",
+    "Standard error of $\\hat\\beta$, computed only when the respective model converges.[^se-note]"
+  )
+)
+
+metrics$Metric <- paste0("**", metrics$Metric, "**")
+metrics$Metric <- sub("Firth \\(brglm2\\)", "Firth (`brglm2`)", metrics$Metric)
+metrics$Metric <- sub("Firth \\(logistf\\)", "Firth (`logistf`)", metrics$Metric)
+
+# pipe table so pandoc renders the math and code in the cells
+kable(metrics, format = "pipe", align = "ll")
+```
+
+[^bias-note]: This is a conditional bias, which favours the MLE because its worst (separated) datasets are excluded.
+[^se-note]: For `glm` (MLE) and `brglm2` this is the usual model-based standard error; for `logistf` it is taken from the penalized likelihood fit.
+
+We vary the main drivers of separation, sample size and prevalence.
+
+1. **Varying sample size** — $n \in \{10, 20, 30, 50, 100, 200, 300, 500\}$ with the intercept fixed to give a marginal prevalence of 5%.
+2. **Varying prevalence** — $n = 100$ fixed, with marginal prevalence varying across $\{1\%, 2\%, 3\%, 5\%, 10\%, 20\%, 30\%, 50\%\}$.
+
+## Varying sample size
+
+@fig-sim1-separation shows how often separation and MLE non-convergence occur, and @fig-sim1-bias and @fig-sim1-se compare bias and standard errors of the three estimators.
+
+```{r}
+#| label: fig-sim1-separation
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 5
+#| fig-cap: "Separation and non-convergence rates by sample size. Marginal prevalence fixed at 5%. The MLE non-convergence and quasi-complete separation lines overlap completely."
+#| fig-cap-location: "bottom"
+plots1$separation
+```
+
+```{r}
+#| label: fig-sim1-bias
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 5
+#| fig-cap: "Bias by sample size for the logistic regression (MLE vs Firth with `brglm2` and `logistf`). Marginal prevalence fixed at 5%."
+plots1$bias
+```
+
+```{r}
+#| label: fig-sim1-se
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 5
+#| fig-cap: "Standard errors by sample size for the logistic regression (MLE vs Firth with `brglm2` and `logistf`). Marginal prevalence fixed at 5%."
+plots1$se
+```
+
+## Varying prevalence
+
+@fig-sim2-separation shows how often separation and MLE non-convergence occur, and @fig-sim2-bias and @fig-sim2-se compare bias and standard errors of the three estimators.
+
+```{r}
+#| label: fig-sim2-separation
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 5
+#| fig-cap: "Separation and non-convergence rates by prevalence. Sample size fixed at 100. The MLE non-convergence and quasi-complete separation lines overlap completely."
+plots2$separation
+```
+
+```{r}
+#| label: fig-sim2-bias
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 5
+#| fig-cap: "Bias by prevalence for the logistic regression (MLE vs Firth with `brglm2` and `logistf`). Sample size fixed at 100."
+plots2$bias
+```
+
+```{r}
+#| label: fig-sim2-se
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 5
+#| fig-cap: "Standard errors by prevalence for the logistic regression (MLE vs Firth with `brglm2` and `logistf`). Sample size fixed at 100."
+plots2$se
+```
+
+
+## Discussion
+
+- **The MLE failed often.** At a prevalence of 5%, quasi-complete separation (and thus MLE failure) occurred in 56% of datasets with $n = 50$ and 28% with $n = 100$ (@fig-sim1-separation). With $n = 100$, the rate of non-convergence fell from 64% at 2% prevalence to about 6% at 10% (@fig-sim2-separation). Both Firth implementations converged in practically all datasets.
+- **Firth reduces bias.** Among datasets where the MLE fit converged, bias in the log odds ratio was 0.28 for MLE and 0.08 for Firth at $n = 100$ and 5% prevalence (@fig-sim1-bias, @fig-sim2-bias). Firth's standard errors were somewhat larger in the smallest samples, where MLE standard errors were available only for converged fits (@fig-sim1-se, @fig-sim2-se).
+- **No penalty in larger samples.** Once separation becomes rare (roughly $n \geq 200$ at 5% prevalence, or prevalence $\geq 10\%$ at $n = 100$), MLE and Firth are essentially identical (@fig-sim1-bias, @fig-sim2-bias).
+- **Firth estimates agreed across packages** `brglm2` and `logistf` gave similar estimates in the simulation scenarios.
+
+# Moving forward
+
+## Recommendation
+Prespecify Firth logistic regression in the SAP when separation is plausible, for example for small sample sizes or a rare outcome. Additionally, in our simulations it performed no worse than the MLE when events were not rare.
+
+## Code and SAP wording {#sec-sap}
+
+**Template code** (replace `outcome`, `treatment` and covariates with your variables).
+
+```r
+library(logistf)
+
+# Fit Firth regression
+fit <- logistf(outcome ~ treatment + covariate1 + covariate2, data = dat)
+
+# Odds ratios with profile-likelihood 95% CI
+exp(cbind(OR = coef(fit), confint(fit)))
+
+# Alternative: brglm2 (note: confint() gives Wald intervals)
+# library(brglm2)
+# fit <- glm(outcome ~ ., family = binomial, data = dat, method = "brglmFit")
+```
+
+**Suggested SAP wording** (adapt as needed):
+
+> The treatment effect will be estimated as an odds ratio using logistic regression with Firth's bias-reduction (R package `logistf`), because few events are expected with 95% CIs based on the profile penalized likelihood.
+
+**Points to consider**
+
+- **Pre-specify rather than switch.** Choosing the method *because* the standard model failed makes the analysis data-dependent. If rare events or separation are plausible, specify Firth regression as the primary analysis.
+- **Predicted probabilities.** Firth regression shrinks the intercept towards 0.5, so predicted risks can be biased upwards when events are rare. If absolute risks matter, consider the FLIC or FLAC variants in the `logistf` package.
+
+## Software
+- The `brglm2` package [@kosmidis2021] implements bias-reduction for the full family of generalized linear models, not only logistic regression. The method is invoked by passing `method = "brglmFit"` directly inside the standard `glm()` call, requiring no change to the model formula or the rest of the analysis workflow. 
+- Alternative implementations include the `logistf` package [@heinze2024], which also provides profile likelihood confidence intervals and tests (the default).
+- For time-to-event analysis, the same problem can occur. The `coxphf` package [@heinze2023coxphf] fits Cox regression with Firth's penalization of the partial likelihood.
+
+Variations of the penalty exist. Specifically, there is also an extended Firth approach to a general mean-bias-reduction framework [@kosmidis2009].
+
+## Session info
+
+```{r}
+#| echo: true
+#| message: false
+
+sessionInfo()
+```
