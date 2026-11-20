@@ -1,11 +1,6 @@
 ---
-title: "Complete separation and rare events"
+title: "Firth logistic regression"
 description: ""
-author:
-  - name: "Ainesh Sewak"
-    orcid: 
-    email: "ainesh.sewak@unibe.ch"
-    affiliation: "Department of Clinical Research, University of Bern"
 bibliography: references.bib
 ---
 
@@ -35,8 +30,9 @@ bibliography: references.bib
 ## Key points
 
 - With small samples or rare outcomes, standard logistic regression can give unstable odds ratio estimates.
-- Firth logistic regression reduces small-sample bias and yields finite coefficient estimates in such cases.
-- In R, use `glm(..., family = binomial(), method = brglmFit)` or the `logistf` package which also provides profile penalized-likelihood confidence intervals and tests.
+- Firth logistic regression can solve this problem.
+- In $\textsf{R}$ it can be fit by using `glm(..., method = "brglmFit")` or via the `logistf` package.
+- Both methods generally provide similar results. The `logistf` package also provides profile penalized-likelihood confidence intervals and hypothesis tests.
 - Prespecify Firth regression in the SAP if few events or separation are anticipated (see [Code and SAP wording](#sec-sap)).
 :::
 
@@ -65,12 +61,12 @@ if (!all(req))
 
 ## What is separation?
 
-*Separation* occurs when a predictor (here, treatment) splits the outcomes so cleanly that the data contain no information about how large the effect could be.
+For a binary outcome, *separation* can occur when one treatment arm has no events and the other has both events and non-events.
 
 - **Complete separation**: the predictor perfectly separates the outcomes. All treated subjects have no event and all controls have the event (or vice versa).
 - **Quasi-complete separation**: the predictor separates the outcomes in one direction only. One cell of the 2x2 table is empty, but the other group has both outcomes.
 
-In both cases the likelihood keeps increasing as the log odds ratio moves towards $\pm\infty$, so there is no finite maximum likelihood estimate (MLE).
+In both cases the predictor (here, treatment) splits the outcomes so cleanly that the data contain no information about how large the effect could be. Consequently, the likelihood keeps increasing as the log odds ratio moves towards $\pm\infty$, so there is no finite maximum likelihood estimate (MLE).
 
 ```{r}
 #| label: tbl-separation-types
@@ -116,6 +112,9 @@ Assume we have the following data from a trial.
 #| echo: true
 #| message: false
 #| warning: false
+#| code-fold: true
+#| code-summary: "Show data example code"
+#| code-copy: true
 
 # 50 subjects: x = treatment (1) vs control (0), y = outcome (1 = event)
 dat <- data.frame(
@@ -313,7 +312,8 @@ m_logistf <- logistf(y ~ x, data = dat)
 exp(cbind(OR = coef(m_logistf), confint(m_logistf)))["x", ]
 ```
 
-The estimated odds ratio for treatment is finite and the interval is wide. It still includes 1, which honestly reflects how little information 4 events in 50 subjects carry. The following table summarizes these methods and their estimates.
+
+The estimated odds ratio for treatment is finite and the interval is wide. It still includes 1, which reflects how little information 4 events in 50 subjects carry. The following table summarizes these methods and their estimates.
 
 
 ```{r}
@@ -321,7 +321,7 @@ The estimated odds ratio for treatment is finite and the interval is wide. It st
 #| echo: false
 #| message: false
 #| warning: false
-#| tbl-cap: "Treatment effect from standard logistic regression (MLE) and Firth regression (brglm2 and logistf)."
+#| tbl-cap: "Treatment effect from standard logistic regression (MLE) and Firth regression."
 #| tbl-cap-location: bottom
 
 b_mle <- coef(summary(m_glm))["x", ]
@@ -334,8 +334,8 @@ ci_txt <- function(lo, hi) paste0("(", fmt(exp(lo)), ", ", fmt(exp(hi)), ")")
 wald <- function(est, se) ci_txt(est - 1.96 * se, est + 1.96 * se)
 
 cmp <- data.frame(
-  Method = c("MLE", "Firth (brglm2)", "Firth (logistf)"),
-  Package = c("base (glm)", "brglm2", "logistf"),
+  Method = c("MLE", "Firth", "Firth"),
+  Package = c("base (<code>glm</code>)", "<code>brglm2</code>", "<code>logistf</code>"),
   `log OR` = fmt(c(b_mle["Estimate"], b_brg["Estimate"], b_lgf)),
   SE = fmt(c(b_mle["Std. Error"], b_brg["Std. Error"], se_lgf)),
   OR = fmt(exp(c(b_mle["Estimate"], b_brg["Estimate"], b_lgf))),
@@ -348,14 +348,24 @@ cmp <- data.frame(
   check.names = FALSE
 )
 
-kable(cmp, format = "html", booktabs = TRUE, align = "llccccc", row.names = FALSE) |>
+kable(cmp, format = "html", booktabs = TRUE, align = "llccccc", row.names = FALSE, escape = FALSE) |>
   kable_classic(full_width = FALSE)
 ```
 
-# Simulation
+# Simulation: MLE vs Firth regression
 ## Setup
 
-For each scenario, $N_\text{sim} = 2{,}000$ datasets are generated under a logistic regression model with a single binary predictor $X \sim \text{Bernoulli}(0.5)$ and true log-odds ratio $\beta = \log(1/3)$. The intercept is chosen to match a target marginal prevalence. For each dataset, three estimators are fitted. The standard MLE (`glm`), Firth regression via `brglm2` (`glm(..., method = "brglmFit")`) and Firth regression via `logistf`. The following quantities are recorded per replicate.
+We compared standard logistic regression (MLE) with Firth regression (from $\textsf{R}$ packages `brglm2`, `logistf`) in small-sample settings. The aim was to see (i) how often the MLE breaks down because of separation and (ii) whether Firth's estimates are less biased and what they cost in precision.
+
+For each scenario, $N_\text{sim} = 2{,}000$ datasets are generated under the logistic regression model
+
+$$
+\text{logit}\, P(Y_i = 1 \mid X_i) = \beta_0 + \beta X_i, \qquad X_i \sim \text{Bernoulli}(0.5),
+$$
+
+with true log-odds ratio $\beta = \log(1/3)$ (OR = 1/3, moderate protective effect). The intercept $\beta_0$ is chosen to match a target marginal prevalence $P(Y = 1)$. For each dataset, three estimators are fitted: the standard MLE (`glm`), Firth regression via `brglm2` and Firth regression via `logistf`. 
+
+For each simulated dataset, we recorded whether quasi-complete separation or near separation occurred. We then evaluated the performance of the three estimators by recording (i) whether the estimation procedure converged, (ii) the bias of the estimates, and (iii) their standard errors (SEs). See @tbl-sim-metrics.
 
 ```{r}
 #| label: tbl-sim-metrics
@@ -376,8 +386,8 @@ metrics <-data.frame(
     "The MLE coefficient or its standard error exceeds 10 in absolute value or the model fails entirely.",
     "Same criterion applied to the `brglm2` Firth estimator.",
     "Same criterion applied to the `logistf` Firth estimator.",
-    "Estimated $\\hat\\beta$ minus the true $\\beta$, computed only when the respective model converges.",
-    "Standard error of $\\hat\\beta$, computed only when the respective model converges."
+    "Estimated $\\hat\\beta$ minus the true $\\beta$, computed only when the respective model converges.[^bias-note]",
+    "Standard error of $\\hat\\beta$, computed only when the respective model converges.[^se-note]"
   )
 )
 
@@ -389,14 +399,17 @@ metrics$Metric <- sub("Firth \\(logistf\\)", "Firth (`logistf`)", metrics$Metric
 kable(metrics, format = "pipe", align = "ll")
 ```
 
-*Notes.* Complete separation was also recorded, but it never occurred in any of the simulated datasets and is therefore not shown. The `brglm2` and MLE standard errors are the usual model-based standard errors of `glm`. For `logistf`, the standard error is taken from the penalized likelihood fit. In the separation figures the MLE non-convergence and quasi-complete separation lines overlap completely.
+[^bias-note]: This is a conditional bias, which favours the MLE because its worst (separated) datasets are excluded.
+[^se-note]: For `glm` (MLE) and `brglm2` this is the usual model-based standard error; for `logistf` it is taken from the penalized likelihood fit.
 
-Two simulation scenarios are considered.
+We vary the main drivers of separation, sample size and prevalence.
 
 1. **Varying sample size** — $n \in \{10, 20, 30, 50, 100, 200, 300, 500\}$ with the intercept fixed to give a marginal prevalence of 5%.
 2. **Varying prevalence** — $n = 100$ fixed, with marginal prevalence varying across $\{1\%, 2\%, 3\%, 5\%, 10\%, 20\%, 30\%, 50\%\}$.
 
 ## Varying sample size
+
+@fig-sim1-separation shows how often separation and MLE non-convergence occur, and @fig-sim1-bias and @fig-sim1-se compare bias and standard errors of the three estimators.
 
 ```{r}
 #| label: fig-sim1-separation
@@ -405,7 +418,7 @@ Two simulation scenarios are considered.
 #| warning: false
 #| fig-width: 6
 #| fig-height: 5
-#| fig-cap: "Separation and non-convergence rates by sample size. Marginal prevalence fixed at 5%."
+#| fig-cap: "Separation and non-convergence rates by sample size. Marginal prevalence fixed at 5%. The MLE non-convergence and quasi-complete separation lines overlap completely."
 #| fig-cap-location: "bottom"
 plots1$separation
 ```
@@ -434,6 +447,8 @@ plots1$se
 
 ## Varying prevalence
 
+@fig-sim2-separation shows how often separation and MLE non-convergence occur, and @fig-sim2-bias and @fig-sim2-se compare bias and standard errors of the three estimators.
+
 ```{r}
 #| label: fig-sim2-separation
 #| echo: false
@@ -441,7 +456,7 @@ plots1$se
 #| warning: false
 #| fig-width: 6
 #| fig-height: 5
-#| fig-cap: "Separation and non-convergence rates by prevalence. Sample size fixed at 100."
+#| fig-cap: "Separation and non-convergence rates by prevalence. Sample size fixed at 100. The MLE non-convergence and quasi-complete separation lines overlap completely."
 plots2$separation
 ```
 
@@ -470,9 +485,9 @@ plots2$se
 
 ## Discussion
 
-- **The MLE failed often.** At a prevalence of 5%, quasi-complete separation (and thus MLE failure) occurred in 56% of datasets with $n = 50$ and 28% with $n = 100$. With $n = 100$, the rate of non-convergence fell from 64% at 2% prevalence to about 6% at 10%. Both Firth implementations converged in practically all datasets.
-- **Firth reduces bias.** Among datasets where the MLE fit converged, bias in the log odds ratio was 0.28 for MLE and 0.08 for Firth at $n = 100$ and 5% prevalence. Firth's standard errors were somewhat larger in the smallest samples, where MLE standard errors were available only for converged fits.
-- **No penalty in larger samples.** Once separation becomes rare (roughly $n \geq 200$ at 5% prevalence, or prevalence $\geq 10\%$ at $n = 100$), MLE and Firth are essentially identical. 
+- **The MLE failed often.** At a prevalence of 5%, quasi-complete separation (and thus MLE failure) occurred in 56% of datasets with $n = 50$ and 28% with $n = 100$ (@fig-sim1-separation). With $n = 100$, the rate of non-convergence fell from 64% at 2% prevalence to about 6% at 10% (@fig-sim2-separation). Both Firth implementations converged in practically all datasets.
+- **Firth reduces bias.** Among datasets where the MLE fit converged, bias in the log odds ratio was 0.28 for MLE and 0.08 for Firth at $n = 100$ and 5% prevalence (@fig-sim1-bias, @fig-sim2-bias). Firth's standard errors were somewhat larger in the smallest samples, where MLE standard errors were available only for converged fits (@fig-sim1-se, @fig-sim2-se).
+- **No penalty in larger samples.** Once separation becomes rare (roughly $n \geq 200$ at 5% prevalence, or prevalence $\geq 10\%$ at $n = 100$), MLE and Firth are essentially identical (@fig-sim1-bias, @fig-sim2-bias).
 - **Firth estimates agreed across packages** `brglm2` and `logistf` gave similar estimates in the simulation scenarios.
 
 # Moving forward

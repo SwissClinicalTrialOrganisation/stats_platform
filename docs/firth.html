@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Ainesh Sewak">
 
-<title>Complete separation and rare events – Statistics and Methodology - tools and support</title>
+<title>Firth logistic regression – Statistics and Methodology - tools and support</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -198,7 +197,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorials.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./firth.html">Complete separation and rare events</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorials.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./firth.html">Firth logistic regression</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -307,7 +306,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./firth.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Complete separation and rare events</span></a>
+ <span class="menu-text">Firth logistic regression</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -359,7 +358,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#theory" id="toc-theory" class="nav-link" data-scroll-target="#theory">Theory</a></li>
   <li><a href="#solution" id="toc-solution" class="nav-link" data-scroll-target="#solution">Solution</a></li>
-  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a>
+  <li><a href="#simulation-mle-vs-firth-regression" id="toc-simulation-mle-vs-firth-regression" class="nav-link" data-scroll-target="#simulation-mle-vs-firth-regression">Simulation: MLE vs Firth regression</a>
   <ul class="collapse">
   <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
   <li><a href="#varying-sample-size" id="toc-varying-sample-size" class="nav-link" data-scroll-target="#varying-sample-size">Varying sample size</a></li>
@@ -379,29 +378,16 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorials.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./firth.html">Complete separation and rare events</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorials.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./firth.html">Firth logistic regression</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Complete separation and rare events</h1>
+<h1 class="title">Firth logistic regression</h1>
 </div>
 
 
-<div class="quarto-title-meta-author">
-  <div class="quarto-title-meta-heading">Author</div>
-  <div class="quarto-title-meta-heading">Affiliation</div>
-  
-    <div class="quarto-title-meta-contents">
-    <p class="author">Ainesh Sewak <a href="mailto:ainesh.sewak@unibe.ch" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
-  </div>
-  <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            Department of Clinical Research, University of Bern
-          </p>
-      </div>
-  </div>
 
 <div class="quarto-title-meta">
 
-      
+    
   
     
   </div>
@@ -442,8 +428,9 @@ Key points
 <div class="callout-body-container callout-body">
 <ul>
 <li>With small samples or rare outcomes, standard logistic regression can give unstable odds ratio estimates.</li>
-<li>Firth logistic regression reduces small-sample bias and yields finite coefficient estimates in such cases.</li>
-<li>In R, use <code>glm(..., family = binomial(), method = brglmFit)</code> or the <code>logistf</code> package which also provides profile penalized-likelihood confidence intervals and tests.</li>
+<li>Firth logistic regression can solve this problem.</li>
+<li>In <span class="math inline">\(\textsf{R}\)</span> it can be fit by using <code>glm(..., method = "brglmFit")</code> or via the <code>logistf</code> package.</li>
+<li>Both methods generally provide similar results. The <code>logistf</code> package also provides profile penalized-likelihood confidence intervals and hypothesis tests.</li>
 <li>Prespecify Firth regression in the SAP if few events or separation are anticipated (see <a href="#sec-sap">Code and SAP wording</a>).</li>
 </ul>
 </div>
@@ -452,12 +439,12 @@ Key points
 <h1>Problem</h1>
 <section id="what-is-separation" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-separation">What is separation?</h2>
-<p><em>Separation</em> occurs when a predictor (here, treatment) splits the outcomes so cleanly that the data contain no information about how large the effect could be.</p>
+<p>For a binary outcome, <em>separation</em> can occur when one treatment arm has no events and the other has both events and non-events.</p>
 <ul>
 <li><strong>Complete separation</strong>: the predictor perfectly separates the outcomes. All treated subjects have no event and all controls have the event (or vice versa).</li>
 <li><strong>Quasi-complete separation</strong>: the predictor separates the outcomes in one direction only. One cell of the 2x2 table is empty, but the other group has both outcomes.</li>
 </ul>
-<p>In both cases the likelihood keeps increasing as the log odds ratio moves towards <span class="math inline">\(\pm\infty\)</span>, so there is no finite maximum likelihood estimate (MLE).</p>
+<p>In both cases the predictor (here, treatment) splits the outcomes so cleanly that the data contain no information about how large the effect could be. Consequently, the likelihood keeps increasing as the log odds ratio moves towards <span class="math inline">\(\pm\infty\)</span>, so there is no finite maximum likelihood estimate (MLE).</p>
 <div class="cell" data-tbl-cap-location="bottom">
 <div id="tbl-separation-types" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -547,7 +534,9 @@ Table&nbsp;1: Small illustrative 2x2 tables: complete separation (left) and quas
 <section id="example" class="level2">
 <h2 class="anchored" data-anchor-id="example">Example</h2>
 <p>Assume we have the following data from a trial.</p>
-<div class="cell">
+<div class="cell" data-code-copy="true">
+<details class="code-fold">
+<summary>Show data example code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 50 subjects: x = treatment (1) vs control (0), y = outcome (1 = event)</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">4</span>, <span class="dv">22</span>, <span class="dv">0</span>)),</span>
@@ -556,6 +545,7 @@ Table&nbsp;1: Small illustrative 2x2 tables: complete separation (left) and quas
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> dat<span class="sc">$</span>x</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> dat<span class="sc">$</span>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell" data-tbl-cap-location="bottom">
 <div id="tbl-example-2x2" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
@@ -755,7 +745,7 @@ Number of Fisher Scoring iterations: 5</code></pre>
 0.120987654 0.000893939 1.234081715 </code></pre>
 </div>
 </div>
-<p>The estimated odds ratio for treatment is finite and the interval is wide. It still includes 1, which honestly reflects how little information 4 events in 50 subjects carry. The following table summarizes these methods and their estimates.</p>
+<p>The estimated odds ratio for treatment is finite and the interval is wide. It still includes 1, which reflects how little information 4 events in 50 subjects carry. The following table summarizes these methods and their estimates.</p>
 <div class="cell" data-tbl-cap-location="bottom">
 <div id="tbl-compare" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -776,7 +766,7 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">MLE</td>
-<td style="text-align: left;">base (glm)</td>
+<td style="text-align: left;">base (<code>glm</code>)</td>
 <td style="text-align: center;">-18.8</td>
 <td style="text-align: center;">3.78e+03</td>
 <td style="text-align: center;">7.02e-09</td>
@@ -784,8 +774,8 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <td style="text-align: center;">Wald</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Firth (brglm2)</td>
-<td style="text-align: left;">brglm2</td>
+<td style="text-align: left;">Firth</td>
+<td style="text-align: left;"><code>brglm2</code></td>
 <td style="text-align: center;">-2.11</td>
 <td style="text-align: center;">1.55</td>
 <td style="text-align: center;">0.121</td>
@@ -793,8 +783,8 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <td style="text-align: center;">Wald</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Firth (logistf)</td>
-<td style="text-align: left;">logistf</td>
+<td style="text-align: left;">Firth</td>
+<td style="text-align: left;"><code>logistf</code></td>
 <td style="text-align: center;">-2.11</td>
 <td style="text-align: center;">1.52</td>
 <td style="text-align: center;">0.121</td>
@@ -808,17 +798,23 @@ Number of Fisher Scoring iterations: 5</code></pre>
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-compare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Treatment effect from standard logistic regression (MLE) and Firth regression (brglm2 and logistf).
+Table&nbsp;3: Treatment effect from standard logistic regression (MLE) and Firth regression.
 </figcaption>
 </figure>
 </div>
 </div>
 </section>
-<section id="simulation" class="level1">
-<h1>Simulation</h1>
+<section id="simulation-mle-vs-firth-regression" class="level1">
+<h1>Simulation: MLE vs Firth regression</h1>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
-<p>For each scenario, <span class="math inline">\(N_\text{sim} = 2{,}000\)</span> datasets are generated under a logistic regression model with a single binary predictor <span class="math inline">\(X \sim \text{Bernoulli}(0.5)\)</span> and true log-odds ratio <span class="math inline">\(\beta = \log(1/3)\)</span>. The intercept is chosen to match a target marginal prevalence. For each dataset, three estimators are fitted. The standard MLE (<code>glm</code>), Firth regression via <code>brglm2</code> (<code>glm(..., method = "brglmFit")</code>) and Firth regression via <code>logistf</code>. The following quantities are recorded per replicate.</p>
+<p>We compared standard logistic regression (MLE) with Firth regression (from <span class="math inline">\(\textsf{R}\)</span> packages <code>brglm2</code>, <code>logistf</code>) in small-sample settings. The aim was to see (i) how often the MLE breaks down because of separation and (ii) whether Firth’s estimates are less biased and what they cost in precision.</p>
+<p>For each scenario, <span class="math inline">\(N_\text{sim} = 2{,}000\)</span> datasets are generated under the logistic regression model</p>
+<p><span class="math display">\[
+\text{logit}\, P(Y_i = 1 \mid X_i) = \beta_0 + \beta X_i, \qquad X_i \sim \text{Bernoulli}(0.5),
+\]</span></p>
+<p>with true log-odds ratio <span class="math inline">\(\beta = \log(1/3)\)</span> (OR = 1/3, moderate protective effect). The intercept <span class="math inline">\(\beta_0\)</span> is chosen to match a target marginal prevalence <span class="math inline">\(P(Y = 1)\)</span>. For each dataset, three estimators are fitted: the standard MLE (<code>glm</code>), Firth regression via <code>brglm2</code> and Firth regression via <code>logistf</code>.</p>
+<p>For each simulated dataset, we recorded whether quasi-complete separation or near separation occurred. We then evaluated the performance of the three estimators by recording (i) whether the estimation procedure converged, (ii) the bias of the estimates, and (iii) their standard errors (SEs). See <a href="#tbl-sim-metrics" class="quarto-xref">Table&nbsp;4</a>.</p>
 <div class="cell" data-tbl-colwidths="[20,80]" data-tbl-cap-location="bottom">
 <div id="tbl-sim-metrics" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-colwidths="[20,80]" data-tbl-cap-location="bottom">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -858,11 +854,11 @@ Table&nbsp;3: Treatment effect from standard logistic regression (MLE) and Firth
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Bias</strong></td>
-<td style="text-align: left;">Estimated <span class="math inline">\(\hat\beta\)</span> minus the true <span class="math inline">\(\beta\)</span>, computed only when the respective model converges.</td>
+<td style="text-align: left;">Estimated <span class="math inline">\(\hat\beta\)</span> minus the true <span class="math inline">\(\beta\)</span>, computed only when the respective model converges.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>SE</strong></td>
-<td style="text-align: left;">Standard error of <span class="math inline">\(\hat\beta\)</span>, computed only when the respective model converges.</td>
+<td style="text-align: left;">Standard error of <span class="math inline">\(\hat\beta\)</span>, computed only when the respective model converges.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></td>
 </tr>
 </tbody>
 </table>
@@ -874,8 +870,7 @@ Table&nbsp;4: Metrics recorded for each simulated dataset.
 </figure>
 </div>
 </div>
-<p><em>Notes.</em> Complete separation was also recorded, but it never occurred in any of the simulated datasets and is therefore not shown. The <code>brglm2</code> and MLE standard errors are the usual model-based standard errors of <code>glm</code>. For <code>logistf</code>, the standard error is taken from the penalized likelihood fit. In the separation figures the MLE non-convergence and quasi-complete separation lines overlap completely.</p>
-<p>Two simulation scenarios are considered.</p>
+<p>We vary the main drivers of separation, sample size and prevalence.</p>
 <ol type="1">
 <li><strong>Varying sample size</strong> — <span class="math inline">\(n \in \{10, 20, 30, 50, 100, 200, 300, 500\}\)</span> with the intercept fixed to give a marginal prevalence of 5%.</li>
 <li><strong>Varying prevalence</strong> — <span class="math inline">\(n = 100\)</span> fixed, with marginal prevalence varying across <span class="math inline">\(\{1\%, 2\%, 3\%, 5\%, 10\%, 20\%, 30\%, 50\%\}\)</span>.</li>
@@ -883,6 +878,7 @@ Table&nbsp;4: Metrics recorded for each simulated dataset.
 </section>
 <section id="varying-sample-size" class="level2">
 <h2 class="anchored" data-anchor-id="varying-sample-size">Varying sample size</h2>
+<p><a href="#fig-sim1-separation" class="quarto-xref">Figure&nbsp;2</a> shows how often separation and MLE non-convergence occur, and <a href="#fig-sim1-bias" class="quarto-xref">Figure&nbsp;3</a> and <a href="#fig-sim1-se" class="quarto-xref">Figure&nbsp;4</a> compare bias and standard errors of the three estimators.</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
 <div id="fig-sim1-separation" class="quarto-float quarto-figure quarto-figure-center anchored" data-cap-location="bottom">
@@ -891,7 +887,7 @@ Table&nbsp;4: Metrics recorded for each simulated dataset.
 <img src="firth_files/figure-html/fig-sim1-separation-1.png" class="img-fluid figure-img" width="576">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim1-separation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Separation and non-convergence rates by sample size. Marginal prevalence fixed at 5%.
+Figure&nbsp;2: Separation and non-convergence rates by sample size. Marginal prevalence fixed at 5%. The MLE non-convergence and quasi-complete separation lines overlap completely.
 </figcaption>
 </figure>
 </div>
@@ -928,6 +924,7 @@ Figure&nbsp;4: Standard errors by sample size for the logistic regression (MLE v
 </section>
 <section id="varying-prevalence" class="level2">
 <h2 class="anchored" data-anchor-id="varying-prevalence">Varying prevalence</h2>
+<p><a href="#fig-sim2-separation" class="quarto-xref">Figure&nbsp;5</a> shows how often separation and MLE non-convergence occur, and <a href="#fig-sim2-bias" class="quarto-xref">Figure&nbsp;6</a> and <a href="#fig-sim2-se" class="quarto-xref">Figure&nbsp;7</a> compare bias and standard errors of the three estimators.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sim2-separation" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -936,7 +933,7 @@ Figure&nbsp;4: Standard errors by sample size for the logistic regression (MLE v
 <img src="firth_files/figure-html/fig-sim2-separation-1.png" class="img-fluid figure-img" width="576">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim2-separation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Separation and non-convergence rates by prevalence. Sample size fixed at 100.
+Figure&nbsp;5: Separation and non-convergence rates by prevalence. Sample size fixed at 100. The MLE non-convergence and quasi-complete separation lines overlap completely.
 </figcaption>
 </figure>
 </div>
@@ -974,9 +971,9 @@ Figure&nbsp;7: Standard errors by prevalence for the logistic regression (MLE vs
 <section id="discussion" class="level2">
 <h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
 <ul>
-<li><strong>The MLE failed often.</strong> At a prevalence of 5%, quasi-complete separation (and thus MLE failure) occurred in 56% of datasets with <span class="math inline">\(n = 50\)</span> and 28% with <span class="math inline">\(n = 100\)</span>. With <span class="math inline">\(n = 100\)</span>, the rate of non-convergence fell from 64% at 2% prevalence to about 6% at 10%. Both Firth implementations converged in practically all datasets.</li>
-<li><strong>Firth reduces bias.</strong> Among datasets where the MLE fit converged, bias in the log odds ratio was 0.28 for MLE and 0.08 for Firth at <span class="math inline">\(n = 100\)</span> and 5% prevalence. Firth’s standard errors were somewhat larger in the smallest samples, where MLE standard errors were available only for converged fits.</li>
-<li><strong>No penalty in larger samples.</strong> Once separation becomes rare (roughly <span class="math inline">\(n \geq 200\)</span> at 5% prevalence, or prevalence <span class="math inline">\(\geq 10\%\)</span> at <span class="math inline">\(n = 100\)</span>), MLE and Firth are essentially identical.</li>
+<li><strong>The MLE failed often.</strong> At a prevalence of 5%, quasi-complete separation (and thus MLE failure) occurred in 56% of datasets with <span class="math inline">\(n = 50\)</span> and 28% with <span class="math inline">\(n = 100\)</span> (<a href="#fig-sim1-separation" class="quarto-xref">Figure&nbsp;2</a>). With <span class="math inline">\(n = 100\)</span>, the rate of non-convergence fell from 64% at 2% prevalence to about 6% at 10% (<a href="#fig-sim2-separation" class="quarto-xref">Figure&nbsp;5</a>). Both Firth implementations converged in practically all datasets.</li>
+<li><strong>Firth reduces bias.</strong> Among datasets where the MLE fit converged, bias in the log odds ratio was 0.28 for MLE and 0.08 for Firth at <span class="math inline">\(n = 100\)</span> and 5% prevalence (<a href="#fig-sim1-bias" class="quarto-xref">Figure&nbsp;3</a>, <a href="#fig-sim2-bias" class="quarto-xref">Figure&nbsp;6</a>). Firth’s standard errors were somewhat larger in the smallest samples, where MLE standard errors were available only for converged fits (<a href="#fig-sim1-se" class="quarto-xref">Figure&nbsp;4</a>, <a href="#fig-sim2-se" class="quarto-xref">Figure&nbsp;7</a>).</li>
+<li><strong>No penalty in larger samples.</strong> Once separation becomes rare (roughly <span class="math inline">\(n \geq 200\)</span> at 5% prevalence, or prevalence <span class="math inline">\(\geq 10\%\)</span> at <span class="math inline">\(n = 100\)</span>), MLE and Firth are essentially identical (<a href="#fig-sim1-bias" class="quarto-xref">Figure&nbsp;3</a>, <a href="#fig-sim2-bias" class="quarto-xref">Figure&nbsp;6</a>).</li>
 <li><strong>Firth estimates agreed across packages</strong> <code>brglm2</code> and <code>logistf</code> gave similar estimates in the simulation scenarios.</li>
 </ul>
 </section>
@@ -1082,6 +1079,7 @@ loaded via a namespace (and not attached):
 </section>
 </section>
 
+
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-firth1993" class="csl-entry" role="listitem">
 Firth, David. 1993. <span>“Bias Reduction of Maximum Likelihood Estimates.”</span> <em>Biometrika</em> 80 (1): 27–38. <a href="https://doi.org/10.1093/biomet/80.1.27">https://doi.org/10.1093/biomet/80.1.27</a>.
@@ -1098,7 +1096,13 @@ Kosmidis, Ioannis, and David Firth. 2009. <span>“Bias Reduction in Exponential
 <div id="ref-kosmidis2021" class="csl-entry" role="listitem">
 ———. 2021. <span>“Jeffreys-Prior Penalty, Finiteness and Shrinkage in Binomial-Response Generalized Linear Models.”</span> <em>Biometrika</em> 108 (1): 71–82. <a href="https://doi.org/10.1093/biomet/asaa052">https://doi.org/10.1093/biomet/asaa052</a>.
 </div>
-</div></section></div></main> <!-- /main -->
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>This is a conditional bias, which favours the MLE because its worst (separated) datasets are excluded.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For <code>glm</code> (MLE) and <code>brglm2</code> this is the usual model-based standard error; for <code>logistf</code> it is taken from the penalized likelihood fit.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

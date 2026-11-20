@@ -72,11 +72,11 @@
     ]
   },
   {
-    "objectID": "tutorials.html#complete-separation-and-rare-events",
-    "href": "tutorials.html#complete-separation-and-rare-events",
+    "objectID": "tutorials.html#firth-logistic-regression",
+    "href": "tutorials.html#firth-logistic-regression",
     "title": "Tutorials",
-    "section": "Complete separation and rare events",
-    "text": "Complete separation and rare events\n \nLogistic regression can break down when events are rare or when a predictor perfectly separates the outcome (complete separation), leading to biased or infinite estimates. This tutorial explains the problem, introduces Firth’s bias-reduced logistic regression as a solution, and illustrates its behaviour with a simulation study.",
+    "section": "Firth logistic regression",
+    "text": "Firth logistic regression\n \nLogistic regression can break down when events are rare or when a predictor perfectly separates the outcome, leading to unstable estimates. This tutorial explains the problem, introduces Firth’s logistic regression as a solution, and illustrates its behaviour with a simulation study.",
     "crumbs": [
       "Home",
       "Tutorials",
@@ -323,133 +323,145 @@
   {
     "objectID": "firth.html",
     "href": "firth.html",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "",
-    "text": "Key points\n\n\n\n\nWith small samples or rare outcomes, standard logistic regression can give unstable odds ratio estimates.\nFirth logistic regression reduces small-sample bias and yields finite coefficient estimates in such cases.\nIn R, use glm(..., family = binomial(), method = brglmFit) or the logistf package which also provides profile penalized-likelihood confidence intervals and tests.\nPrespecify Firth regression in the SAP if few events or separation are anticipated (see Code and SAP wording).",
+    "text": "Key points\n\n\n\n\nWith small samples or rare outcomes, standard logistic regression can give unstable odds ratio estimates.\nFirth logistic regression can solve this problem.\nIn \\(\\textsf{R}\\) it can be fit by using glm(..., method = \"brglmFit\") or via the logistf package.\nBoth methods generally provide similar results. The logistf package also provides profile penalized-likelihood confidence intervals and hypothesis tests.\nPrespecify Firth regression in the SAP if few events or separation are anticipated (see Code and SAP wording).",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#what-is-separation",
     "href": "firth.html#what-is-separation",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "What is separation?",
-    "text": "What is separation?\nSeparation occurs when a predictor (here, treatment) splits the outcomes so cleanly that the data contain no information about how large the effect could be.\n\nComplete separation: the predictor perfectly separates the outcomes. All treated subjects have no event and all controls have the event (or vice versa).\nQuasi-complete separation: the predictor separates the outcomes in one direction only. One cell of the 2x2 table is empty, but the other group has both outcomes.\n\nIn both cases the likelihood keeps increasing as the log odds ratio moves towards \\(\\pm\\infty\\), so there is no finite maximum likelihood estimate (MLE).\n\n\n\n\n\n\n\n\nComplete separation\n\n\n\n\n\n\n\n\n\nOutcome\n\n\n\n\nNo event\nEvent\n\n\n\n\nTreatment\n10\n0\n\n\nControl\n0\n10\n\n\n\n\n\n\nQuasi-complete separation\n\n\n\n\n\n\n\n\n\nOutcome\n\n\n\n\nNo event\nEvent\n\n\n\n\nTreatment\n10\n0\n\n\nControl\n6\n4\n\n\n\n\n\n\n\n\nTable 1: Small illustrative 2x2 tables: complete separation (left) and quasi-complete separation (right). Empty cells are highlighted.",
+    "text": "What is separation?\nFor a binary outcome, separation can occur when one treatment arm has no events and the other has both events and non-events.\n\nComplete separation: the predictor perfectly separates the outcomes. All treated subjects have no event and all controls have the event (or vice versa).\nQuasi-complete separation: the predictor separates the outcomes in one direction only. One cell of the 2x2 table is empty, but the other group has both outcomes.\n\nIn both cases the predictor (here, treatment) splits the outcomes so cleanly that the data contain no information about how large the effect could be. Consequently, the likelihood keeps increasing as the log odds ratio moves towards \\(\\pm\\infty\\), so there is no finite maximum likelihood estimate (MLE).\n\n\n\n\n\n\n\n\nComplete separation\n\n\n\n\n\n\n\n\n\nOutcome\n\n\n\n\nNo event\nEvent\n\n\n\n\nTreatment\n10\n0\n\n\nControl\n0\n10\n\n\n\n\n\n\nQuasi-complete separation\n\n\n\n\n\n\n\n\n\nOutcome\n\n\n\n\nNo event\nEvent\n\n\n\n\nTreatment\n10\n0\n\n\nControl\n6\n4\n\n\n\n\n\n\n\n\nTable 1: Small illustrative 2x2 tables: complete separation (left) and quasi-complete separation (right). Empty cells are highlighted.",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#example",
     "href": "firth.html#example",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Example",
-    "text": "Example\nAssume we have the following data from a trial.\n\n# 50 subjects: x = treatment (1) vs control (0), y = outcome (1 = event)\ndat &lt;- data.frame(\n  x = rep(c(0, 0, 1, 1), times = c(24, 4, 22, 0)),\n  y = rep(c(0, 1, 0, 1), times = c(24, 4, 22, 0))\n)\n\nx &lt;- dat$x\ny &lt;- dat$y\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOutcome\n\n\n\n\n\nNo event\nEvent\nTotal\n\n\n\n\nTreatment\n22\n0\n22\n\n\nControl\n24\n4\n28\n\n\nTotal\n46\n4\n50\n\n\n\n\n\n\n\n\nTable 2: 2x2 contingency table for a binary treatment indicator \\(X\\) and binary outcome \\(Y\\) with sample size of 50.\n\n\n\n\nThe treatment seems highly effective!\nThe SAP specifies to conduct a logistic regression and estimate the odds ratio of treatment against control.\n\nm_glm &lt;- glm(y ~ x, family = binomial, data = dat)\nsummary(m_glm)\n\n\nCall:\nglm(formula = y ~ x, family = binomial, data = dat)\n\nCoefficients:\n             Estimate Std. Error z value Pr(&gt;|z|)    \n(Intercept)   -1.7918     0.5401  -3.318 0.000908 ***\nx            -18.7743  3780.1276  -0.005 0.996037    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n(Dispersion parameter for binomial family taken to be 1)\n\n    Null deviance: 27.877  on 49  degrees of freedom\nResidual deviance: 22.967  on 48  degrees of freedom\nAIC: 26.967\n\nNumber of Fisher Scoring iterations: 19\n\n\nHowever, the data have quasi-complete separation. Note the large treatment effect estimate and its standard error. Additionally, there is a warning about fitted probabilities being numerically 0 or 1. These are the typical signs of separation.\n\n\n\n\n\n\nChecking for separation\n\n\n\nWith a single binary predictor, an empty cell in the 2x2 table is easy to spot. With several covariates it is not. The detectseparation package can check the model formally.\n\n# install.packages(\"detectseparation\")\nlibrary(detectseparation)\n\nglm(y ~ x, family = binomial, data = dat,\n    method = \"detect_separation\")\n\nThe output states whether separation was detected and which coefficients are infinite.",
+    "text": "Example\nAssume we have the following data from a trial.\n\n\nShow data example code\n# 50 subjects: x = treatment (1) vs control (0), y = outcome (1 = event)\ndat &lt;- data.frame(\n  x = rep(c(0, 0, 1, 1), times = c(24, 4, 22, 0)),\n  y = rep(c(0, 1, 0, 1), times = c(24, 4, 22, 0))\n)\n\nx &lt;- dat$x\ny &lt;- dat$y\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOutcome\n\n\n\n\n\nNo event\nEvent\nTotal\n\n\n\n\nTreatment\n22\n0\n22\n\n\nControl\n24\n4\n28\n\n\nTotal\n46\n4\n50\n\n\n\n\n\n\n\n\nTable 2: 2x2 contingency table for a binary treatment indicator \\(X\\) and binary outcome \\(Y\\) with sample size of 50.\n\n\n\n\nThe treatment seems highly effective!\nThe SAP specifies to conduct a logistic regression and estimate the odds ratio of treatment against control.\n\nm_glm &lt;- glm(y ~ x, family = binomial, data = dat)\nsummary(m_glm)\n\n\nCall:\nglm(formula = y ~ x, family = binomial, data = dat)\n\nCoefficients:\n             Estimate Std. Error z value Pr(&gt;|z|)    \n(Intercept)   -1.7918     0.5401  -3.318 0.000908 ***\nx            -18.7743  3780.1276  -0.005 0.996037    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n(Dispersion parameter for binomial family taken to be 1)\n\n    Null deviance: 27.877  on 49  degrees of freedom\nResidual deviance: 22.967  on 48  degrees of freedom\nAIC: 26.967\n\nNumber of Fisher Scoring iterations: 19\n\n\nHowever, the data have quasi-complete separation. Note the large treatment effect estimate and its standard error. Additionally, there is a warning about fitted probabilities being numerically 0 or 1. These are the typical signs of separation.\n\n\n\n\n\n\nChecking for separation\n\n\n\nWith a single binary predictor, an empty cell in the 2x2 table is easy to spot. With several covariates it is not. The detectseparation package can check the model formally.\n\n# install.packages(\"detectseparation\")\nlibrary(detectseparation)\n\nglm(y ~ x, family = binomial, data = dat,\n    method = \"detect_separation\")\n\nThe output states whether separation was detected and which coefficients are infinite.",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#setup",
     "href": "firth.html#setup",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Setup",
-    "text": "Setup\nFor each scenario, \\(N_\\text{sim} = 2{,}000\\) datasets are generated under a logistic regression model with a single binary predictor \\(X \\sim \\text{Bernoulli}(0.5)\\) and true log-odds ratio \\(\\beta = \\log(1/3)\\). The intercept is chosen to match a target marginal prevalence. For each dataset, three estimators are fitted. The standard MLE (glm), Firth regression via brglm2 (glm(..., method = \"brglmFit\")) and Firth regression via logistf. The following quantities are recorded per replicate.\n\n\n\n\n\n\n\n\n\n\n\n\nMetric\nDefinition\n\n\n\n\nQuasi-complete separation\nExactly one level of \\(X\\) has a constant outcome (all 0 or all 1).\n\n\nNear separation\nAt least one cell of the \\(2 \\times 2\\) table contains fewer than 5 subjects.\n\n\nMLE non-convergence\nThe MLE coefficient or its standard error exceeds 10 in absolute value or the model fails entirely.\n\n\nFirth (brglm2) non-convergence\nSame criterion applied to the brglm2 Firth estimator.\n\n\nFirth (logistf) non-convergence\nSame criterion applied to the logistf Firth estimator.\n\n\nBias\nEstimated \\(\\hat\\beta\\) minus the true \\(\\beta\\), computed only when the respective model converges.\n\n\nSE\nStandard error of \\(\\hat\\beta\\), computed only when the respective model converges.\n\n\n\n\n\n\nTable 4: Metrics recorded for each simulated dataset.\n\n\n\n\nNotes. Complete separation was also recorded, but it never occurred in any of the simulated datasets and is therefore not shown. The brglm2 and MLE standard errors are the usual model-based standard errors of glm. For logistf, the standard error is taken from the penalized likelihood fit. In the separation figures the MLE non-convergence and quasi-complete separation lines overlap completely.\nTwo simulation scenarios are considered.\n\nVarying sample size — \\(n \\in \\{10, 20, 30, 50, 100, 200, 300, 500\\}\\) with the intercept fixed to give a marginal prevalence of 5%.\nVarying prevalence — \\(n = 100\\) fixed, with marginal prevalence varying across \\(\\{1\\%, 2\\%, 3\\%, 5\\%, 10\\%, 20\\%, 30\\%, 50\\%\\}\\).",
+    "text": "Setup\nWe compared standard logistic regression (MLE) with Firth regression (from \\(\\textsf{R}\\) packages brglm2, logistf) in small-sample settings. The aim was to see (i) how often the MLE breaks down because of separation and (ii) whether Firth’s estimates are less biased and what they cost in precision.\nFor each scenario, \\(N_\\text{sim} = 2{,}000\\) datasets are generated under the logistic regression model\n\\[\n\\text{logit}\\, P(Y_i = 1 \\mid X_i) = \\beta_0 + \\beta X_i, \\qquad X_i \\sim \\text{Bernoulli}(0.5),\n\\]\nwith true log-odds ratio \\(\\beta = \\log(1/3)\\) (OR = 1/3, moderate protective effect). The intercept \\(\\beta_0\\) is chosen to match a target marginal prevalence \\(P(Y = 1)\\). For each dataset, three estimators are fitted: the standard MLE (glm), Firth regression via brglm2 and Firth regression via logistf.\nFor each simulated dataset, we recorded whether quasi-complete separation or near separation occurred. We then evaluated the performance of the three estimators by recording (i) whether the estimation procedure converged, (ii) the bias of the estimates, and (iii) their standard errors (SEs). See Table 4.\n\n\n\n\n\n\n\n\n\n\n\n\nMetric\nDefinition\n\n\n\n\nQuasi-complete separation\nExactly one level of \\(X\\) has a constant outcome (all 0 or all 1).\n\n\nNear separation\nAt least one cell of the \\(2 \\times 2\\) table contains fewer than 5 subjects.\n\n\nMLE non-convergence\nThe MLE coefficient or its standard error exceeds 10 in absolute value or the model fails entirely.\n\n\nFirth (brglm2) non-convergence\nSame criterion applied to the brglm2 Firth estimator.\n\n\nFirth (logistf) non-convergence\nSame criterion applied to the logistf Firth estimator.\n\n\nBias\nEstimated \\(\\hat\\beta\\) minus the true \\(\\beta\\), computed only when the respective model converges.1\n\n\nSE\nStandard error of \\(\\hat\\beta\\), computed only when the respective model converges.2\n\n\n\n\n\n\nTable 4: Metrics recorded for each simulated dataset.\n\n\n\n\nWe vary the main drivers of separation, sample size and prevalence.\n\nVarying sample size — \\(n \\in \\{10, 20, 30, 50, 100, 200, 300, 500\\}\\) with the intercept fixed to give a marginal prevalence of 5%.\nVarying prevalence — \\(n = 100\\) fixed, with marginal prevalence varying across \\(\\{1\\%, 2\\%, 3\\%, 5\\%, 10\\%, 20\\%, 30\\%, 50\\%\\}\\).",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#varying-sample-size",
     "href": "firth.html#varying-sample-size",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Varying sample size",
-    "text": "Varying sample size\n\n\n\n\n\n\n\n\nFigure 2: Separation and non-convergence rates by sample size. Marginal prevalence fixed at 5%.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: Bias by sample size for the logistic regression (MLE vs Firth with brglm2 and logistf). Marginal prevalence fixed at 5%.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 4: Standard errors by sample size for the logistic regression (MLE vs Firth with brglm2 and logistf). Marginal prevalence fixed at 5%.",
+    "text": "Varying sample size\nFigure 2 shows how often separation and MLE non-convergence occur, and Figure 3 and Figure 4 compare bias and standard errors of the three estimators.\n\n\n\n\n\n\n\n\nFigure 2: Separation and non-convergence rates by sample size. Marginal prevalence fixed at 5%. The MLE non-convergence and quasi-complete separation lines overlap completely.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: Bias by sample size for the logistic regression (MLE vs Firth with brglm2 and logistf). Marginal prevalence fixed at 5%.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 4: Standard errors by sample size for the logistic regression (MLE vs Firth with brglm2 and logistf). Marginal prevalence fixed at 5%.",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#varying-prevalence",
     "href": "firth.html#varying-prevalence",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Varying prevalence",
-    "text": "Varying prevalence\n\n\n\n\n\n\n\n\nFigure 5: Separation and non-convergence rates by prevalence. Sample size fixed at 100.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 6: Bias by prevalence for the logistic regression (MLE vs Firth with brglm2 and logistf). Sample size fixed at 100.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 7: Standard errors by prevalence for the logistic regression (MLE vs Firth with brglm2 and logistf). Sample size fixed at 100.",
+    "text": "Varying prevalence\nFigure 5 shows how often separation and MLE non-convergence occur, and Figure 6 and Figure 7 compare bias and standard errors of the three estimators.\n\n\n\n\n\n\n\n\nFigure 5: Separation and non-convergence rates by prevalence. Sample size fixed at 100. The MLE non-convergence and quasi-complete separation lines overlap completely.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 6: Bias by prevalence for the logistic regression (MLE vs Firth with brglm2 and logistf). Sample size fixed at 100.\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 7: Standard errors by prevalence for the logistic regression (MLE vs Firth with brglm2 and logistf). Sample size fixed at 100.",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#discussion",
     "href": "firth.html#discussion",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Discussion",
-    "text": "Discussion\n\nThe MLE failed often. At a prevalence of 5%, quasi-complete separation (and thus MLE failure) occurred in 56% of datasets with \\(n = 50\\) and 28% with \\(n = 100\\). With \\(n = 100\\), the rate of non-convergence fell from 64% at 2% prevalence to about 6% at 10%. Both Firth implementations converged in practically all datasets.\nFirth reduces bias. Among datasets where the MLE fit converged, bias in the log odds ratio was 0.28 for MLE and 0.08 for Firth at \\(n = 100\\) and 5% prevalence. Firth’s standard errors were somewhat larger in the smallest samples, where MLE standard errors were available only for converged fits.\nNo penalty in larger samples. Once separation becomes rare (roughly \\(n \\geq 200\\) at 5% prevalence, or prevalence \\(\\geq 10\\%\\) at \\(n = 100\\)), MLE and Firth are essentially identical.\nFirth estimates agreed across packages brglm2 and logistf gave similar estimates in the simulation scenarios.",
+    "text": "Discussion\n\nThe MLE failed often. At a prevalence of 5%, quasi-complete separation (and thus MLE failure) occurred in 56% of datasets with \\(n = 50\\) and 28% with \\(n = 100\\) (Figure 2). With \\(n = 100\\), the rate of non-convergence fell from 64% at 2% prevalence to about 6% at 10% (Figure 5). Both Firth implementations converged in practically all datasets.\nFirth reduces bias. Among datasets where the MLE fit converged, bias in the log odds ratio was 0.28 for MLE and 0.08 for Firth at \\(n = 100\\) and 5% prevalence (Figure 3, Figure 6). Firth’s standard errors were somewhat larger in the smallest samples, where MLE standard errors were available only for converged fits (Figure 4, Figure 7).\nNo penalty in larger samples. Once separation becomes rare (roughly \\(n \\geq 200\\) at 5% prevalence, or prevalence \\(\\geq 10\\%\\) at \\(n = 100\\)), MLE and Firth are essentially identical (Figure 3, Figure 6).\nFirth estimates agreed across packages brglm2 and logistf gave similar estimates in the simulation scenarios.",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#recommendation",
     "href": "firth.html#recommendation",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Recommendation",
     "text": "Recommendation\nPrespecify Firth logistic regression in the SAP when separation is plausible, for example for small sample sizes or a rare outcome. Additionally, in our simulations it performed no worse than the MLE when events were not rare.",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#sec-sap",
     "href": "firth.html#sec-sap",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Code and SAP wording",
     "text": "Code and SAP wording\nTemplate code (replace outcome, treatment and covariates with your variables).\nlibrary(logistf)\n\n# Fit Firth regression\nfit &lt;- logistf(outcome ~ treatment + covariate1 + covariate2, data = dat)\n\n# Odds ratios with profile-likelihood 95% CI\nexp(cbind(OR = coef(fit), confint(fit)))\n\n# Alternative: brglm2 (note: confint() gives Wald intervals)\n# library(brglm2)\n# fit &lt;- glm(outcome ~ ., family = binomial, data = dat, method = \"brglmFit\")\nSuggested SAP wording (adapt as needed):\n\nThe treatment effect will be estimated as an odds ratio using logistic regression with Firth’s bias-reduction (R package logistf), because few events are expected with 95% CIs based on the profile penalized likelihood.\n\nPoints to consider\n\nPre-specify rather than switch. Choosing the method because the standard model failed makes the analysis data-dependent. If rare events or separation are plausible, specify Firth regression as the primary analysis.\nPredicted probabilities. Firth regression shrinks the intercept towards 0.5, so predicted risks can be biased upwards when events are rare. If absolute risks matter, consider the FLIC or FLAC variants in the logistf package.",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#software",
     "href": "firth.html#software",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Software",
     "text": "Software\n\nThe brglm2 package (Kosmidis and Firth 2021) implements bias-reduction for the full family of generalized linear models, not only logistic regression. The method is invoked by passing method = \"brglmFit\" directly inside the standard glm() call, requiring no change to the model formula or the rest of the analysis workflow.\nAlternative implementations include the logistf package (Heinze, Ploner, and Jiricka 2024), which also provides profile likelihood confidence intervals and tests (the default).\nFor time-to-event analysis, the same problem can occur. The coxphf package (Heinze et al. 2023) fits Cox regression with Firth’s penalization of the partial likelihood.\n\nVariations of the penalty exist. Specifically, there is also an extended Firth approach to a general mean-bias-reduction framework (Kosmidis and Firth 2009).",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
     ]
   },
   {
     "objectID": "firth.html#session-info",
     "href": "firth.html#session-info",
-    "title": "Complete separation and rare events",
+    "title": "Firth logistic regression",
     "section": "Session info",
     "text": "Session info\n\nsessionInfo()\n\nR version 4.5.2 (2025-10-31 ucrt)\nPlatform: x86_64-w64-mingw32/x64\nRunning under: Windows 11 x64 (build 22631)\n\nMatrix products: default\n  LAPACK version 3.12.1\n\nlocale:\n[1] LC_COLLATE=English_Australia.utf8  LC_CTYPE=English_Australia.utf8   \n[3] LC_MONETARY=English_Australia.utf8 LC_NUMERIC=C                      \n[5] LC_TIME=English_Australia.utf8    \n\ntime zone: Europe/Zurich\ntzcode source: internal\n\nattached base packages:\n[1] stats     graphics  grDevices utils     datasets  methods   base     \n\nother attached packages:\n[1] kableExtra_1.4.0    knitr_1.51          logistf_1.26.1     \n[4] brglm2_1.0.1        data.table_1.18.2.1 ggplot2_4.0.1      \n\nloaded via a namespace (and not attached):\n [1] gtable_0.3.6           shape_1.4.6.1          xfun_0.56             \n [4] formula.tools_1.7.1    htmlwidgets_1.6.4      lattice_0.22-7        \n [7] numDeriv_2016.8-1.1    vctrs_0.7.1            tools_4.5.2           \n[10] Rdpack_2.6.5           generics_0.1.4         enrichwith_0.4.0      \n[13] tibble_3.3.1           pan_2.0                pkgconfig_2.0.3       \n[16] jomo_2.7-6             Matrix_1.7-4           RColorBrewer_1.1-3    \n[19] S7_0.2.1               lifecycle_1.0.5        stringr_1.6.0         \n[22] compiler_4.5.2         farver_2.1.2           textshaping_1.0.4     \n[25] statmod_1.5.1          codetools_0.2-20       htmltools_0.5.9       \n[28] yaml_2.3.12            glmnet_4.1-10          mice_3.19.0           \n[31] pillar_1.11.1          nloptr_2.2.1           tidyr_1.3.2           \n[34] MASS_7.3-65            reformulas_0.4.3.1     iterators_1.0.14      \n[37] rpart_4.1.24           boot_1.3-32            foreach_1.5.2         \n[40] mitml_0.4-5            nlme_3.1-168           tidyselect_1.2.1      \n[43] digest_0.6.39          stringi_1.8.7          dplyr_1.2.1           \n[46] purrr_1.2.1            labeling_0.4.3         splines_4.5.2         \n[49] operator.tools_1.6.3.1 fastmap_1.2.0          grid_4.5.2            \n[52] cli_3.6.5              magrittr_2.0.4         survival_3.8-3        \n[55] broom_1.0.12           withr_3.0.2            scales_1.4.0          \n[58] backports_1.5.0        rmarkdown_2.30         otel_0.2.0            \n[61] nnet_7.3-20            lme4_1.1-38            evaluate_1.0.5        \n[64] rbibutils_2.4.1        viridisLite_0.4.3      mgcv_1.9-3            \n[67] nleqslv_3.3.7          rlang_1.1.7            Rcpp_1.1.1            \n[70] glue_1.8.0             xml2_1.5.2             svglite_2.2.2         \n[73] rstudioapi_0.18.0      minqa_1.2.8            jsonlite_2.0.0        \n[76] R6_2.6.1               systemfonts_1.3.1",
     "crumbs": [
       "Home",
       "Tutorials",
-      "Complete separation and rare events"
+      "Firth logistic regression"
+    ]
+  },
+  {
+    "objectID": "firth.html#footnotes",
+    "href": "firth.html#footnotes",
+    "title": "Firth logistic regression",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nThis is a conditional bias, which favours the MLE because its worst (separated) datasets are excluded.↩︎\nFor glm (MLE) and brglm2 this is the usual model-based standard error; for logistf it is taken from the penalized likelihood fit.↩︎",
+    "crumbs": [
+      "Home",
+      "Tutorials",
+      "Firth logistic regression"
     ]
   },
   {
