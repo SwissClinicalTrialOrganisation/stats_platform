@@ -166,7 +166,7 @@ The SAP specifies to conduct a logistic regression and estimate the odds ratio o
 m_glm <- glm(y ~ x, family = binomial, data = dat)
 summary(m_glm)
 ```
-However, the data have quasi-complete separation. Note the large treatment effect estimate and its standard error. Additionally, there is a warning about fitted probabilities being numerically 0 or 1. These are the typical signs of separation.
+However, the data have quasi-complete separation. Note the large treatment effect estimate and its standard error. Depending on the model, `glm` may also warn that fitted probabilities are numerically 0 or 1. These are the typical signs of separation.
 
 ::: {.callout-tip}
 ## Checking for separation
@@ -176,7 +176,8 @@ With a single binary predictor, an empty cell in the 2x2 table is easy to spot. 
 ```{r}
 #| label: detect-separation
 #| echo: true
-#| eval: false
+#| message: false
+#| warning: false
 
 # install.packages("detectseparation")
 library(detectseparation)
@@ -185,7 +186,7 @@ glm(y ~ x, family = binomial, data = dat,
     method = "detect_separation")
 ```
 
-The output states whether separation was detected and which coefficients are infinite.
+The output confirms that separation was detected (`Separation: TRUE`). For each coefficient it shows whether the MLE is finite (`0`) or infinite (`Inf` / `-Inf`). Here the intercept is finite, but the treatment coefficient is `-Inf`. In that case, the log odds ratio would keep decreasing without bound because the treatment arm has no events.
 :::
 
 # Theory
@@ -352,8 +353,8 @@ kable(cmp, format = "html", booktabs = TRUE, align = "llccccc", row.names = FALS
   kable_classic(full_width = FALSE)
 ```
 
-# Simulation: MLE vs Firth regression
-## Setup
+# Simulation
+## Setup: MLE vs Firth regression
 
 We compared standard logistic regression (MLE) with Firth regression (from $\textsf{R}$ packages `brglm2`, `logistf`) in small-sample settings. The aim was to see (i) how often the MLE breaks down because of separation and (ii) whether Firth's estimates are less biased and what they cost in precision.
 

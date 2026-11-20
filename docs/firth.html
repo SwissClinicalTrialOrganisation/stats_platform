@@ -358,9 +358,9 @@ window.Quarto = {
   </ul></li>
   <li><a href="#theory" id="toc-theory" class="nav-link" data-scroll-target="#theory">Theory</a></li>
   <li><a href="#solution" id="toc-solution" class="nav-link" data-scroll-target="#solution">Solution</a></li>
-  <li><a href="#simulation-mle-vs-firth-regression" id="toc-simulation-mle-vs-firth-regression" class="nav-link" data-scroll-target="#simulation-mle-vs-firth-regression">Simulation: MLE vs Firth regression</a>
+  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a>
   <ul class="collapse">
-  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#setup-mle-vs-firth-regression" id="toc-setup-mle-vs-firth-regression" class="nav-link" data-scroll-target="#setup-mle-vs-firth-regression">Setup: MLE vs Firth regression</a></li>
   <li><a href="#varying-sample-size" id="toc-varying-sample-size" class="nav-link" data-scroll-target="#varying-sample-size">Varying sample size</a></li>
   <li><a href="#varying-prevalence" id="toc-varying-prevalence" class="nav-link" data-scroll-target="#varying-prevalence">Varying prevalence</a></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
@@ -631,7 +631,7 @@ AIC: 26.967
 Number of Fisher Scoring iterations: 19</code></pre>
 </div>
 </div>
-<p>However, the data have quasi-complete separation. Note the large treatment effect estimate and its standard error. Additionally, there is a warning about fitted probabilities being numerically 0 or 1. These are the typical signs of separation.</p>
+<p>However, the data have quasi-complete separation. Note the large treatment effect estimate and its standard error. Depending on the model, <code>glm</code> may also warn that fitted probabilities are numerically 0 or 1. These are the typical signs of separation.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -649,8 +649,16 @@ Checking for separation
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glm</span>(y <span class="sc">~</span> x, <span class="at">family =</span> binomial, <span class="at">data =</span> dat,</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"detect_separation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Implementation: ROI | Solver: lpsolve 
+Separation: TRUE 
+Existence of maximum likelihood estimates
+(Intercept)           x 
+          0        -Inf 
+0: finite value, Inf: infinity, -Inf: -infinity</code></pre>
 </div>
-<p>The output states whether separation was detected and which coefficients are infinite.</p>
+</div>
+<p>The output confirms that separation was detected (<code>Separation: TRUE</code>). For each coefficient it shows whether the MLE is finite (<code>0</code>) or infinite (<code>Inf</code> / <code>-Inf</code>). Here the intercept is finite, but the treatment coefficient is <code>-Inf</code>. In that case, the log odds ratio would keep decreasing without bound because the treatment arm has no events.</p>
 </div>
 </div>
 </section>
@@ -691,11 +699,11 @@ Figure&nbsp;1: Profile log-likelihood for the treatment log odds ratio in the ex
 <h1>Solution</h1>
 <p>Going back to the example, we see that this fixes the issue.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("brglm2")  # if not already installed</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brglm2)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>m_firth <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x, <span class="at">family =</span> binomial, <span class="at">data =</span> dat, <span class="at">method =</span> <span class="st">"brglmFit"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m_firth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("brglm2")  # if not already installed</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brglm2)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>m_firth <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x, <span class="at">family =</span> binomial, <span class="at">data =</span> dat, <span class="at">method =</span> <span class="st">"brglmFit"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m_firth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -724,8 +732,8 @@ Number of Fisher Scoring iterations: 5</code></pre>
 </div>
 <p>The coefficients are on the log-odds scale. To report an odds ratio, exponentiate the estimate and its confidence interval. Note that <code>confint()</code> on a <code>brglmFit</code> object gives <strong>Wald</strong> intervals, which can be unreliable with so few events.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># odds ratios with Wald 95% CI</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(m_firth), <span class="fu">confint</span>(m_firth))[<span class="st">"x"</span>, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># odds ratios with Wald 95% CI</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(m_firth), <span class="fu">confint</span>(m_firth))[<span class="st">"x"</span>, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         OR       2.5 %      97.5 % 
 0.120987661 0.005772634 2.535760032 </code></pre>
@@ -733,13 +741,13 @@ Number of Fisher Scoring iterations: 5</code></pre>
 </div>
 <p>For <strong>profile-likelihood</strong> confidence intervals, the <code>logistf</code> package can be used instead. It fits Firth regression and by default (<code>pl = TRUE</code>) computes profile penalized likelihood intervals.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("logistf")  # if not already installed</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(logistf)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>m_logistf <span class="ot">&lt;-</span> <span class="fu">logistf</span>(y <span class="sc">~</span> x, <span class="at">data =</span> dat)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># odds ratio with profile-likelihood 95% CI</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(m_logistf), <span class="fu">confint</span>(m_logistf)))[<span class="st">"x"</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("logistf")  # if not already installed</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(logistf)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>m_logistf <span class="ot">&lt;-</span> <span class="fu">logistf</span>(y <span class="sc">~</span> x, <span class="at">data =</span> dat)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># odds ratio with profile-likelihood 95% CI</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(m_logistf), <span class="fu">confint</span>(m_logistf)))[<span class="st">"x"</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         OR   Lower 95%   Upper 95% 
 0.120987654 0.000893939 1.234081715 </code></pre>
@@ -804,10 +812,10 @@ Table&nbsp;3: Treatment effect from standard logistic regression (MLE) and Firth
 </div>
 </div>
 </section>
-<section id="simulation-mle-vs-firth-regression" class="level1">
-<h1>Simulation: MLE vs Firth regression</h1>
-<section id="setup" class="level2">
-<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<section id="simulation" class="level1">
+<h1>Simulation</h1>
+<section id="setup-mle-vs-firth-regression" class="level2">
+<h2 class="anchored" data-anchor-id="setup-mle-vs-firth-regression">Setup: MLE vs Firth regression</h2>
 <p>We compared standard logistic regression (MLE) with Firth regression (from <span class="math inline">\(\textsf{R}\)</span> packages <code>brglm2</code>, <code>logistf</code>) in small-sample settings. The aim was to see (i) how often the MLE breaks down because of separation and (ii) whether Firth’s estimates are less biased and what they cost in precision.</p>
 <p>For each scenario, <span class="math inline">\(N_\text{sim} = 2{,}000\)</span> datasets are generated under the logistic regression model</p>
 <p><span class="math display">\[
@@ -816,7 +824,7 @@ Table&nbsp;3: Treatment effect from standard logistic regression (MLE) and Firth
 <p>with true log-odds ratio <span class="math inline">\(\beta = \log(1/3)\)</span> (OR = 1/3, moderate protective effect). The intercept <span class="math inline">\(\beta_0\)</span> is chosen to match a target marginal prevalence <span class="math inline">\(P(Y = 1)\)</span>. For each dataset, three estimators are fitted: the standard MLE (<code>glm</code>), Firth regression via <code>brglm2</code> and Firth regression via <code>logistf</code>.</p>
 <p>For each simulated dataset, we recorded whether quasi-complete separation or near separation occurred. We then evaluated the performance of the three estimators by recording (i) whether the estimation procedure converged, (ii) the bias of the estimates, and (iii) their standard errors (SEs). See <a href="#tbl-sim-metrics" class="quarto-xref">Table&nbsp;4</a>.</p>
 <div class="cell" data-tbl-colwidths="[20,80]" data-tbl-cap-location="bottom">
-<div id="tbl-sim-metrics" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-colwidths="[20,80]" data-tbl-cap-location="bottom">
+<div id="tbl-sim-metrics" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom" data-tbl-colwidths="[20,80]">
 <figure class="quarto-float quarto-float-tbl figure">
 <div aria-describedby="tbl-sim-metrics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -987,17 +995,17 @@ Figure&nbsp;7: Standard errors by prevalence for the logistic regression (MLE vs
 <section id="sec-sap" class="level2">
 <h2 class="anchored" data-anchor-id="sec-sap">Code and SAP wording</h2>
 <p><strong>Template code</strong> (replace <code>outcome</code>, <code>treatment</code> and covariates with your variables).</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(logistf)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Firth regression</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">logistf</span>(outcome <span class="sc">~</span> treatment <span class="sc">+</span> covariate1 <span class="sc">+</span> covariate2, <span class="at">data =</span> dat)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Odds ratios with profile-likelihood 95% CI</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(fit), <span class="fu">confint</span>(fit)))</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative: brglm2 (note: confint() gives Wald intervals)</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># library(brglm2)</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># fit &lt;- glm(outcome ~ ., family = binomial, data = dat, method = "brglmFit")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(logistf)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Firth regression</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">logistf</span>(outcome <span class="sc">~</span> treatment <span class="sc">+</span> covariate1 <span class="sc">+</span> covariate2, <span class="at">data =</span> dat)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Odds ratios with profile-likelihood 95% CI</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">coef</span>(fit), <span class="fu">confint</span>(fit)))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative: brglm2 (note: confint() gives Wald intervals)</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># library(brglm2)</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># fit &lt;- glm(outcome ~ ., family = binomial, data = dat, method = "brglmFit")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><strong>Suggested SAP wording</strong> (adapt as needed):</p>
 <blockquote class="blockquote">
 <p>The treatment effect will be estimated as an odds ratio using logistic regression with Firth’s bias-reduction (R package <code>logistf</code>), because few events are expected with 95% CIs based on the profile penalized likelihood.</p>
@@ -1020,7 +1028,7 @@ Figure&nbsp;7: Standard errors by prevalence for the logistic regression (MLE vs
 <section id="session-info" class="level2">
 <h2 class="anchored" data-anchor-id="session-info">Session info</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.5.2 (2025-10-31 ucrt)
 Platform: x86_64-w64-mingw32/x64
@@ -1041,36 +1049,39 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] kableExtra_1.4.0    knitr_1.51          logistf_1.26.1     
-[4] brglm2_1.0.1        data.table_1.18.2.1 ggplot2_4.0.1      
+[1] detectseparation_0.4.0 kableExtra_1.4.0       knitr_1.51            
+[4] logistf_1.26.1         brglm2_1.0.1           data.table_1.18.2.1   
+[7] ggplot2_4.0.1         
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.6           shape_1.4.6.1          xfun_0.56             
- [4] formula.tools_1.7.1    htmlwidgets_1.6.4      lattice_0.22-7        
- [7] numDeriv_2016.8-1.1    vctrs_0.7.1            tools_4.5.2           
-[10] Rdpack_2.6.5           generics_0.1.4         enrichwith_0.4.0      
-[13] tibble_3.3.1           pan_2.0                pkgconfig_2.0.3       
-[16] jomo_2.7-6             Matrix_1.7-4           RColorBrewer_1.1-3    
-[19] S7_0.2.1               lifecycle_1.0.5        stringr_1.6.0         
-[22] compiler_4.5.2         farver_2.1.2           textshaping_1.0.4     
-[25] statmod_1.5.1          codetools_0.2-20       htmltools_0.5.9       
-[28] yaml_2.3.12            glmnet_4.1-10          mice_3.19.0           
-[31] pillar_1.11.1          nloptr_2.2.1           tidyr_1.3.2           
-[34] MASS_7.3-65            reformulas_0.4.3.1     iterators_1.0.14      
-[37] rpart_4.1.24           boot_1.3-32            foreach_1.5.2         
-[40] mitml_0.4-5            nlme_3.1-168           tidyselect_1.2.1      
-[43] digest_0.6.39          stringi_1.8.7          dplyr_1.2.1           
-[46] purrr_1.2.1            labeling_0.4.3         splines_4.5.2         
-[49] operator.tools_1.6.3.1 fastmap_1.2.0          grid_4.5.2            
-[52] cli_3.6.5              magrittr_2.0.4         survival_3.8-3        
-[55] broom_1.0.12           withr_3.0.2            scales_1.4.0          
-[58] backports_1.5.0        rmarkdown_2.30         otel_0.2.0            
-[61] nnet_7.3-20            lme4_1.1-38            evaluate_1.0.5        
-[64] rbibutils_2.4.1        viridisLite_0.4.3      mgcv_1.9-3            
-[67] nleqslv_3.3.7          rlang_1.1.7            Rcpp_1.1.1            
-[70] glue_1.8.0             xml2_1.5.2             svglite_2.2.2         
-[73] rstudioapi_0.18.0      minqa_1.2.8            jsonlite_2.0.0        
-[76] R6_2.6.1               systemfonts_1.3.1     </code></pre>
+ [1] tidyselect_1.2.1         viridisLite_0.4.3        dplyr_1.2.1             
+ [4] farver_2.1.2             S7_0.2.1                 fastmap_1.2.0           
+ [7] digest_0.6.39            rpart_4.1.24             lifecycle_1.0.5         
+[10] survival_3.8-3           statmod_1.5.1            magrittr_2.0.4          
+[13] compiler_4.5.2           rlang_1.1.7              tools_4.5.2             
+[16] yaml_2.3.12              labeling_0.4.3           htmlwidgets_1.6.4       
+[19] xml2_1.5.2               RColorBrewer_1.1-3       enrichwith_0.4.0        
+[22] registry_0.5-1           nleqslv_3.3.7            withr_3.0.2             
+[25] purrr_1.2.1              numDeriv_2016.8-1.1      nnet_7.3-20             
+[28] grid_4.5.2               jomo_2.7-6               mice_3.19.0             
+[31] scales_1.4.0             iterators_1.0.14         MASS_7.3-65             
+[34] cli_3.6.5                rmarkdown_2.30           reformulas_0.4.3.1      
+[37] generics_0.1.4           otel_0.2.0               rstudioapi_0.18.0       
+[40] minqa_1.2.8              stringr_1.6.0            operator.tools_1.6.3.1  
+[43] splines_4.5.2            vctrs_0.7.1              boot_1.3-32             
+[46] glmnet_4.1-10            Matrix_1.7-4             jsonlite_2.0.0          
+[49] slam_0.1-56              mitml_0.4-5              ROI.plugin.lpsolve_1.0-2
+[52] systemfonts_1.3.1        foreach_1.5.2            tidyr_1.3.2             
+[55] glue_1.8.0               ROI_1.0-2                nloptr_2.2.1            
+[58] pan_2.0                  codetools_0.2-20         stringi_1.8.7           
+[61] shape_1.4.6.1            gtable_0.3.6             lme4_1.1-38             
+[64] tibble_3.3.1             pillar_1.11.1            htmltools_0.5.9         
+[67] R6_2.6.1                 textshaping_1.0.4        Rdpack_2.6.5            
+[70] formula.tools_1.7.1      lpSolveAPI_5.5.2.0-17.15 evaluate_1.0.5          
+[73] lattice_0.22-7           rbibutils_2.4.1          backports_1.5.0         
+[76] broom_1.0.12             Rcpp_1.1.1               svglite_2.2.2           
+[79] nlme_3.1-168             checkmate_2.3.4          mgcv_1.9-3              
+[82] xfun_0.56                pkgconfig_2.0.3         </code></pre>
 </div>
 </div>
 
